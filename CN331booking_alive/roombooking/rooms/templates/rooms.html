@@ -91,16 +91,16 @@
           <h3 class="text-xl font-semibold text-gray-800">Pick a Date</h3>
 
           <label for="date_small" class="block text-sm font-medium text-gray-700">Date</label>
-          <input type="date" id="date_small" name="date" value="{{ date|default:'' }}"
+          <input type="date" id="date_small" name="date"
+            value="{{ date|default:'' }}"
             class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required>
 
           <label for="classroom_small" class="block text-sm font-medium text-gray-700">Pick a room</label>
-          <select id="classroom_small" name="classroom" required
-            class="w-full px-3 py-2 border rounded-lg bg-white text-gray-900">
+          <select id="classroom_small" name="classroom" required class="w-full px-3 py-2 border rounded-lg bg-white text-gray-900">
             <option value="" disabled {% if not classroom %}selected{% endif %}>— choose —</option>
             {% for sc in smallclassroom %}
-            <option value="{{ sc }}" {% if classroom==sc %}selected{% endif %}>{{ sc }}</option>
+            <option value="{{ sc }}" {% if classroom == sc %}selected{% endif %}>{{ sc }}</option>
             {% endfor %}
           </select>
 
@@ -125,16 +125,16 @@
           <h3 class="text-xl font-semibold text-gray-800">Pick a Date</h3>
 
           <label for="date_medium" class="block text-sm font-medium text-gray-700">Date</label>
-          <input type="date" id="date_medium" name="date" value="{{ date|default:'' }}"
+          <input type="date" id="date_medium" name="date"
+            value="{{ date|default:'' }}"
             class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required>
 
           <label for="classroom_medium" class="block text-sm font-medium text-gray-700">Pick a room</label>
-          <select id="classroom_medium" name="classroom" required
-            class="w-full px-3 py-2 border rounded-lg bg-white text-gray-900">
+          <select id="classroom_medium" name="classroom" required class="w-full px-3 py-2 border rounded-lg bg-white text-gray-900">
             <option value="" disabled {% if not classroom %}selected{% endif %}>— choose —</option>
             {% for mc in mediumclassroom %}
-            <option value="{{ mc }}" {% if classroom==mc %}selected{% endif %}>{{ mc }}</option>
+            <option value="{{ mc }}" {% if classroom == mc %}selected{% endif %}>{{ mc }}</option>
             {% endfor %}
           </select>
 
@@ -159,16 +159,16 @@
           <h3 class="text-xl font-semibold text-gray-800">Pick a Date</h3>
 
           <label for="date_large" class="block text-sm font-medium text-gray-700">Date</label>
-          <input type="date" id="date_large" name="date" value="{{ date|default:'' }}"
+          <input type="date" id="date_large" name="date"
+            value="{{ date|default:'' }}"
             class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required>
 
           <label for="classroom_large" class="block text-sm font-medium text-gray-700">Pick a room</label>
-          <select id="classroom_large" name="classroom" required
-            class="w-full px-3 py-2 border rounded-lg bg-white text-gray-900">
+          <select id="classroom_large" name="classroom" required class="w-full px-3 py-2 border rounded-lg bg-white text-gray-900">
             <option value="" disabled {% if not classroom %}selected{% endif %}>— choose —</option>
             {% for lc in largeclassroom %}
-            <option value="{{ lc }}" {% if classroom==lc %}selected{% endif %}>{{ lc }}</option>
+            <option value="{{ lc }}" {% if classroom == lc %}selected{% endif %}>{{ lc }}</option>
             {% endfor %}
           </select>
 
@@ -199,10 +199,12 @@
 
         <div class="grid grid-cols-3 gap-3">
           {% for t in s_times %}
-          <button type="button" class="px-4 py-2 rounded-xl border shadow hover:shadow-lg transition
+          <button type="button"
+                  class="px-4 py-2 rounded-xl border shadow hover:shadow-lg transition
                          hover:-translate-y-0.5 active:translate-y-0
                          bg-gradient-to-r from-gray-50 to-white
-                         hover:ring-2 hover:ring-orange-400" onclick="pickTime('timeSmallInput','{{ t }}', this)">
+                         hover:ring-2 hover:ring-orange-400"
+                  onclick="pickTime('timeSmallInput','{{ t }}', this)">
             {{ t }}:00
           </button>
           {% empty %}
@@ -237,10 +239,12 @@
 
         <div class="grid grid-cols-3 gap-3">
           {% for t in m_times %}
-          <button type="button" class="px-4 py-2 rounded-xl border shadow hover:shadow-lg transition
+          <button type="button"
+                  class="px-4 py-2 rounded-xl border shadow hover:shadow-lg transition
                          hover:-translate-y-0.5 active:translate-y-0
                          bg-gradient-to-r from-gray-50 to-white
-                         hover:ring-2 hover:ring-orange-400" onclick="pickTime('timeMediumInput','{{ t }}', this)">
+                         hover:ring-2 hover:ring-orange-400"
+                  onclick="pickTime('timeMediumInput','{{ t }}', this)">
             {{ t }}:00
           </button>
           {% empty %}
@@ -275,10 +279,12 @@
 
         <div class="grid grid-cols-3 gap-3">
           {% for t in l_times %}
-          <button type="button" class="px-4 py-2 rounded-xl border shadow hover:shadow-lg transition
+          <button type="button"
+                  class="px-4 py-2 rounded-xl border shadow hover:shadow-lg transition
                          hover:-translate-y-0.5 active:translate-y-0
                          bg-gradient-to-r from-gray-50 to-white
-                         hover:ring-2 hover:ring-orange-400" onclick="pickTime('timeLargeInput','{{ t }}', this)">
+                         hover:ring-2 hover:ring-orange-400"
+                  onclick="pickTime('timeLargeInput','{{ t }}', this)">
             {{ t }}:00
           </button>
           {% empty %}
@@ -299,12 +305,9 @@
 
   <!-- ================= JS ================= -->
   <!-- Auto-open flag set by Django OUTSIDE JS (no linter errors) -->
-  {% if s_times %}
-  <script>window.__AUTO_OPEN = '#timeSmall';</script>{% endif %}
-  {% if m_times %}
-  <script>window.__AUTO_OPEN = '#timeMedium';</script>{% endif %}
-  {% if l_times %}
-  <script>window.__AUTO_OPEN = '#timeLarge';</script>{% endif %}
+  {% if s_times %}<script>window.__AUTO_OPEN = '#timeSmall';</script>{% endif %}
+  {% if m_times %}<script>window.__AUTO_OPEN = '#timeMedium';</script>{% endif %}
+  {% if l_times %}<script>window.__AUTO_OPEN = '#timeLarge';</script>{% endif %}
 
   <script>
     // --- Helpers & Modal controls ---
@@ -382,5 +385,4 @@
     }
   </script>
 </body>
-
 </html>
