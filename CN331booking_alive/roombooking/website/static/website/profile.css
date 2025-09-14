@@ -56,10 +56,21 @@ body{
 .hint{ margin:.35rem 0 0; color:#6b5f6b; font-size:.9rem; }
 
 /* Buttons */
-.actions{ display:flex; gap:10px; margin-top:10px; }
+.actions{ display:flex; gap:10px; margin-top:10px; align-items:center; flex-wrap:wrap; }
+
+/* ปุ่ม: สูงอัตโนมัติ, ตัวหนังสือกึ่งกลาง */
 .btn-primary,.btn-secondary,.btn-danger{
-  height:42px; padding:0 14px; border-radius:10px; border:0; font-weight:800; cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:8px 12px; height:auto; line-height:1;
+  border-radius:10px; border:0; font-weight:700; cursor:pointer;
+  text-decoration:none;   /* ให้ <a> ดูเหมือนปุ่ม */
+  font-size:14px;
 }
+
+/* สีเหมือนเดิม */
+.btn-primary{ background:#f4a261; color:#1e1533; }
+.btn-secondary{ background:#fff; border:1px solid rgba(0,0,0,.08); }
+.btn-danger{ background:#d9534f; color:#fff; }
 .btn-primary{ background:#f4a261; color:#1e1533; }
 .btn-secondary{ background:#fff; border:1px solid rgba(0,0,0,.08); }
 .btn-danger{ background:#d9534f; color:#fff; }
