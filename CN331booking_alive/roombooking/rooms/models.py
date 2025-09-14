@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Classroom(models.Model):
     roomnumber = models.TextField()
     roomsize = models.TextField()
@@ -13,6 +14,7 @@ class Classroom(models.Model):
 
     def __str__(self):
         return str(self.roomnumber)
+
 
 class Reservation(models.Model):
     user = models.TextField()

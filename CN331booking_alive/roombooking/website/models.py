@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Account(models.Model):
     userName = models.TextField()
     password = models.TextField()

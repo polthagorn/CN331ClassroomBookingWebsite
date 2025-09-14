@@ -1,97 +1,201 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>My Reservations</title>
 
   <!-- ฟอนต์สวยๆ แบบเดียวกับหน้าอื่น -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Raleway:wght@400;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Raleway:wght@400;600&display=swap"
+    rel="stylesheet">
 
   <style>
     /* ===== Base & Background (lunabg) ===== */
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body{
-      margin:0; min-height:100vh;
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
       background:#0d0a12 url("{% static 'images/blankbg.png' %}") center/cover no-repeat fixed;
-      display:flex; align-items:flex-start; justify-content:center;
-      font-family:'Raleway',sans-serif; color:#2c2236;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      font-family: 'Raleway', sans-serif;
+      color: #2c2236;
     }
 
     /* ===== Layout ===== */
     /* ↓↓↓ เลื่อนกล่องให้ต่ำลงจากเดิม (96px → 136px) */
-    .container{ width:min(1100px,92vw); margin:136px auto 48px; }
-    .topbar{
-      position:fixed; top:16px; left:16px; right:16px;
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    .container {
+      width: min(1100px, 92vw);
+      margin: 136px auto 48px;
     }
-    .btn, .link-btn{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding:10px 14px; border-radius:12px; font-weight:700; text-decoration:none; cursor:pointer; border:0;
-      box-shadow:0 6px 18px rgba(0,0,0,.15);
+
+    .topbar {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
     }
-    .btn-white{ background:rgba(255,255,255,.75); color:#1e1533; }
-    .btn-white:hover{ background:#fff; }
-    .btn-orange{ background:#f4a261; color:#1e1533; }
-    .btn-orange:hover{ background:#f08a3e; color:#1e1533; }
-    .btn-rose{ background:#e25067; color:#fff; }
-    .btn-rose:hover{ background:#cc3e55; }
+
+    .btn,
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border: 0;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .15);
+    }
+
+    .btn-white {
+      background: rgba(255, 255, 255, .75);
+      color: #1e1533;
+    }
+
+    .btn-white:hover {
+      background: #fff;
+    }
+
+    .btn-orange {
+      background: #f4a261;
+      color: #1e1533;
+    }
+
+    .btn-orange:hover {
+      background: #f08a3e;
+      color: #1e1533;
+    }
+
+    .btn-rose {
+      background: #e25067;
+      color: #fff;
+    }
+
+    .btn-rose:hover {
+      background: #cc3e55;
+    }
 
     /* ===== Title ===== */
-    .title{
-      margin:0 0 24px 6px;
-      font:600 2.2rem/1.15 'Playfair Display',serif;
-      color:#dac7a8;
-      text-shadow:0 2px 10px rgba(0,0,0,.25);
+    .title {
+      margin: 0 0 24px 6px;
+      font: 600 2.2rem/1.15 'Playfair Display', serif;
+      color: #dac7a8;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, .25);
     }
 
     /* ===== Card (glass) ===== */
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.78));
-      backdrop-filter:blur(6px);
-      border-radius:18px;
-      box-shadow:0 10px 30px rgba(30,21,51,.25);
-      padding:18px;
-      overflow:hidden;
+    .card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .86), rgba(255, 255, 255, .78));
+      backdrop-filter: blur(6px);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(30, 21, 51, .25);
+      padding: 18px;
+      overflow: hidden;
     }
 
     /* ===== Table ===== */
-    .table-wrap{ overflow:auto; }
-    table{ width:100%; border-collapse:collapse; min-width:720px; }
+    .table-wrap {
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
 
     /* ↓↓↓ เปลี่ยนโทนเทาให้เป็นโทนอุ่น */
-    thead th{
-      text-align:left; font-size:.9rem; color:#4b3f4f; padding:12px 14px;
-      border-bottom:1px solid #eadcc4;            /* เดิม #e8e0f1 */
-      background:rgba(228, 228, 228, 0.72);           /* เดิม rgba(255,255,255,.55) */
-      position:sticky; top:0; backdrop-filter:blur(6px);
+    thead th {
+      text-align: left;
+      font-size: .9rem;
+      color: #4b3f4f;
+      padding: 12px 14px;
+      border-bottom: 1px solid #eadcc4;
+      /* เดิม #e8e0f1 */
+      background: rgba(228, 228, 228, 0.72);
+      /* เดิม rgba(255,255,255,.55) */
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(6px);
     }
-    tbody td{ padding:12px 14px; border-bottom:1px solid #f0e4cf; } /* เดิม #eee6f5 */
-    tbody tr:hover td{ background:rgba(255,247,236,.65); }          /* เดิม rgba(255,255,255,.55) */
+
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #f0e4cf;
+    }
+
+    /* เดิม #eee6f5 */
+    tbody tr:hover td {
+      background: rgba(255, 247, 236, .65);
+    }
+
+    /* เดิม rgba(255,255,255,.55) */
 
     /* ===== Badges for size ===== */
-    .badge{
-      display:inline-block; padding:.25rem .6rem; border-radius:999px; font-weight:800; font-size:.75rem;
+    .badge {
+      display: inline-block;
+      padding: .25rem .6rem;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: .75rem;
     }
-    .badge-s{ background:#f4e1c6; color:#5b452a; }
-    .badge-m{ background:#d6e8ff; color:#153a75; }
-    .badge-l{ background:#e9d6ff; color:#4b2a75; }
+
+    .badge-s {
+      background: #f4e1c6;
+      color: #5b452a;
+    }
+
+    .badge-m {
+      background: #d6e8ff;
+      color: #153a75;
+    }
+
+    .badge-l {
+      background: #e9d6ff;
+      color: #4b2a75;
+    }
 
     /* ===== Empty state ===== */
-    .empty{
-      text-align:center; padding:36px 10px;
-      color:#514463; font-weight:600;
+    .empty {
+      text-align: center;
+      padding: 36px 10px;
+      color: #514463;
+      font-weight: 600;
     }
 
     /* Responsive tweaks */
-    @media (max-width: 640px){
-      .container{ margin-top: 130px;} /* ขยับตามหน้าจอเล็ก */
-      .title{ font-size:1.8rem; }
+    @media (max-width: 640px) {
+      .container {
+        margin-top: 130px;
+      }
+
+      /* ขยับตามหน้าจอเล็ก */
+      .title {
+        font-size: 1.8rem;
+      }
     }
   </style>
 </head>
+
 <body>
 
   <!-- Top bar -->
@@ -104,76 +208,77 @@
     <h1 class="title">My Reservations</h1>
 
     {% if reservations %}
-      <section class="card">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Room</th>
-                <th>Size</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th style="width:1%;"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for r in reservations %}
-              <tr>
-                <td>#{{ r.id }}</td>
-                <td>{{ r.roomnumber }}</td>
-                <td>
-                  {% with rs=r.roomsize|lower %}
-                    {% if rs == "s" %}
-                      <span class="badge badge-s">Small</span>
-                    {% elif rs == "m" %}
-                      <span class="badge badge-m">Medium</span>
-                    {% elif rs == "l" %}
-                      <span class="badge badge-l">Large</span>
-                    {% else %}
-                      <span class="badge">{{ r.roomsize }}</span>
-                    {% endif %}
-                  {% endwith %}
-                </td>
-                <td>{{ r.date }}</td>
+    <section class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Room</th>
+              <th>Size</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th style="width:1%;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in reservations %}
+            <tr>
+              <td>#{{ r.id }}</td>
+              <td>{{ r.roomnumber }}</td>
+              <td>
+                {% with rs=r.roomsize|lower %}
+                {% if rs == "s" %}
+                <span class="badge badge-s">Small</span>
+                {% elif rs == "m" %}
+                <span class="badge badge-m">Medium</span>
+                {% elif rs == "l" %}
+                <span class="badge badge-l">Large</span>
+                {% else %}
+                <span class="badge">{{ r.roomsize }}</span>
+                {% endif %}
+                {% endwith %}
+              </td>
+              <td>{{ r.date }}</td>
 
-                <!-- ↓↓↓ เวลา: แสดง HH:00–(HH+1):00 อย่างถูกต้องแม้ r.time เป็นสตริง -->
-                <td class="render-time" data-time="{{ r.time }}"></td>
+              <!-- ↓↓↓ เวลา: แสดง HH:00–(HH+1):00 อย่างถูกต้องแม้ r.time เป็นสตริง -->
+              <td class="render-time" data-time="{{ r.time }}"></td>
 
-                <td>
-                  <form method="post" onsubmit="return confirm('Cancel this reservation?');">
-                    {% csrf_token %}
-                    <input type="hidden" name="rid" value="{{ r.id }}">
-                    <button type="submit" class="btn btn-rose">Cancel</button>
-                  </form>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </section>
+              <td>
+                <form method="post" onsubmit="return confirm('Cancel this reservation?');">
+                  {% csrf_token %}
+                  <input type="hidden" name="rid" value="{{ r.id }}">
+                  <button type="submit" class="btn btn-rose">Cancel</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
     {% else %}
-      <section class="card empty">
-        You have no reservations yet.
-        <div style="margin-top:14px;">
-          <a href="{% url 'rooms' %}" class="btn btn-orange">Find a room →</a>
-        </div>
-      </section>
+    <section class="card empty">
+      You have no reservations yet.
+      <div style="margin-top:14px;">
+        <a href="{% url 'rooms' %}" class="btn btn-orange">Find a room →</a>
+      </div>
+    </section>
     {% endif %}
   </main>
 
   <!-- สคริปต์สั้นๆ จัดเวลาให้เป็น 6:00–7:00 (รองรับทั้ง int/str/ค่าว่าง) -->
   <script>
-    (function(){
-      function pad2(n){ return (n<10? "0":"")+n; } // ถ้าอยาก 06:00 เปลี่ยนเป็น pad2(h)
-      document.querySelectorAll(".render-time").forEach(td=>{
+    (function () {
+      function pad2(n) { return (n < 10 ? "0" : "") + n; } // ถ้าอยาก 06:00 เปลี่ยนเป็น pad2(h)
+      document.querySelectorAll(".render-time").forEach(td => {
         var raw = td.getAttribute("data-time");
         var h = parseInt(raw, 10);
         if (!Number.isFinite(h)) h = 0; // fallback กันค่าว่าง
-        td.textContent = h + ":00–" + (h+1) + ":00"; // ต้องการ "6:00" ไม่เติม 0 นำหน้า
+        td.textContent = h + ":00–" + (h + 1) + ":00"; // ต้องการ "6:00" ไม่เติม 0 นำหน้า
       });
     })();
   </script>
 </body>
+
 </html>

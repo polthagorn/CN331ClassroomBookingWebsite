@@ -1,13 +1,15 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from .models import Account
 from django.http import HttpResponse
 import sqlite3
+
 # Create your views here.
 from django.shortcuts import render, redirect
 from .models import Account
 
 from django.shortcuts import render, redirect
 from .models import Account
+
 
 def profile(request):
     ctx = {}
@@ -52,16 +54,22 @@ def profile(request):
             return redirect("profile")
 
         if old_pw == new_pw:
-            request.session["changing_username_message"] = "New password must be different from current password."
+            request.session["changing_username_message"] = (
+                "New password must be different from current password."
+            )
             return redirect("profile")
 
         if len(new_pw) < 8:
-            request.session["changing_username_message"] = "New password must be at least 8 characters."
+            request.session["changing_username_message"] = (
+                "New password must be at least 8 characters."
+            )
             return redirect("profile")
 
         current_stored_pw = getattr(acc, "password", "")
         if old_pw != current_stored_pw:
-            request.session["changing_username_message"] = "Current password is incorrect."
+            request.session["changing_username_message"] = (
+                "Current password is incorrect."
+            )
             return redirect("profile")
 
         # save
@@ -72,6 +80,7 @@ def profile(request):
 
     # --- GET ---
     return render(request, "profile.html", ctx)
+
 
 def index(request):
     """
@@ -89,9 +98,11 @@ def index(request):
     # Render loader page with target
     return render(request, "index.html", {"target": target})
 
+
 import re
 
 USERNAME_RE = re.compile(r"^[^\s]{1,150}$")  # no spaces, up to 150 chars
+
 
 def login(request):  # login + register
     if request.method == "POST":
@@ -100,16 +111,20 @@ def login(request):  # login + register
         # ---- LOGIN ----
         if subtype == "login":
             un = (request.POST.get("login_username") or "").strip()
-            pw = (request.POST.get("login_password") or "")
+            pw = request.POST.get("login_password") or ""
 
             if not un or not pw:
-                request.session["user_name_error"] = "Please enter username and password."
+                request.session["user_name_error"] = (
+                    "Please enter username and password."
+                )
                 return redirect("login")
 
             try:
                 acc = Account.objects.get(userName=un)
             except Account.DoesNotExist:
-                request.session["user_name_error"] = "That account doesn’t exist. Please sign up."
+                request.session["user_name_error"] = (
+                    "That account doesn’t exist. Please sign up."
+                )
                 return redirect("login")
 
             if pw == acc.password:
@@ -125,11 +140,13 @@ def login(request):  # login + register
         # ---- SIGNUP ----
         elif subtype == "signup":
             su = (request.POST.get("signup_username") or "").strip()
-            sp = (request.POST.get("signup_password") or "")
+            sp = request.POST.get("signup_password") or ""
 
             # basic checks
             if not su or not sp:
-                request.session["user_name_error"] = "Please enter username and password."
+                request.session["user_name_error"] = (
+                    "Please enter username and password."
+                )
                 return redirect("login")
 
             if " " in su:
@@ -141,7 +158,9 @@ def login(request):  # login + register
                 return redirect("login")
 
             if len(sp) < 8:
-                request.session["password_length_error"] = "Password must be at least 8 characters."
+                request.session["password_length_error"] = (
+                    "Password must be at least 8 characters."
+                )
                 return redirect("login")
 
             if not USERNAME_RE.match(su):
@@ -149,7 +168,9 @@ def login(request):  # login + register
                 return redirect("login")
 
             if Account.objects.filter(userName=su).exists():
-                request.session["username_occupied"] = "This username has already been used."
+                request.session["username_occupied"] = (
+                    "This username has already been used."
+                )
                 return redirect("login")
 
             Account.objects.create(userName=su, password=sp)
@@ -162,10 +183,10 @@ def login(request):  # login + register
 
     # GET
     ctx = {
-        "password_length_error":   request.session.pop("password_length_error", None),
-        "user_name_error":   request.session.pop("user_name_error", None),
-        "password_error":    request.session.pop("password_error", None),
+        "password_length_error": request.session.pop("password_length_error", None),
+        "user_name_error": request.session.pop("user_name_error", None),
+        "password_error": request.session.pop("password_error", None),
         "username_occupied": request.session.pop("username_occupied", None),
-        "username_created":  request.session.pop("username_created", None),
+        "username_created": request.session.pop("username_created", None),
     }
     return render(request, "login.html", ctx)

@@ -3,10 +3,9 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My Account • BookingDome</title>
-
   <link
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Raleway:wght@400;600&display=swap"
     rel="stylesheet">
@@ -19,45 +18,36 @@
       <h1>My Account</h1>
       <a class="back-link" href="{% url 'rooms' %}">← Back to Rooms</a>
     </header>
-
     <!-- Profile (username only) -->
     <section class="card">
       <h2 class="card-title">Profile</h2>
-
       <div class="row">
         <div class="row__label">Username</div>
         <div class="row__value" id="usernameText">{{ username }}</div>
       </div>
-
       <!-- <p class="hint">Use “Change Password” below to update your password.</p> -->
     </section>
-
     <!-- Change password (no confirm) -->
     <section class="card">
       <h2 class="card-title">Change Password</h2>
       <form id="changePwForm" class="grid" method="POST">
         {% csrf_token %}
-
         <div class="field">
           <label class="field__label" for="curPw">Current Password</label>
-          <input class="field__input" id="curPw" type="password" required name="oldpassword" />
+          <input class="field__input" id="curPw" type="password" required name="oldpassword">
         </div>
-
         <div class="field">
           <label class="field__label" for="newPw">New Password</label>
-          <input class="field__input" id="newPw" type="password" required name="newpassword" />
+          <input class="field__input" id="newPw" type="password" required name="newpassword">
           <p class="hint">{{ changing_username_message }}</p>
         </div>
-
         <div class="actions">
           <button class="btn-secondary" type="reset">Clear</button>
           <button class="btn-primary" type="submit">Update Password</button>
         </div>
-
         <p id="pwMsg" class="msg" role="status" aria-live="polite"></p>
       </form>
     </section>
-
     <!-- Logout -->
     <section class="card">
       <h2 class="card-title">Session</h2>
@@ -69,10 +59,9 @@
           </button>
         </form>
         <!-- Go to Reservations button -->
-    <a href="{% url 'my_reservations' %}" class="btn-primary">
-      My Reservations
-    </a>
+        <a href="{% url 'my_reservations' %}" class="btn-primary">
+          My Reservations
+        </a>
       </div>
     </section>
-  
   </main>
