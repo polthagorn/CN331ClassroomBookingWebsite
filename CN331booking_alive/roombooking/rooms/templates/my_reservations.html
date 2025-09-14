@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Reservations</title>
+  <style>
+    /* optional minimal styling */
+    body { font-family: system-ui, Arial, sans-serif; padding: 24px; background:#0d0a12; color:#eee; }
+    h1 { margin: 0 0 16px; }
+    table { width: 100%; border-collapse: collapse; background:#191522; border-radius: 12px; overflow: hidden; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid #2a2436; text-align: left; }
+    th { background:#211a32; }
+    tr:hover td { background:#1a1526; }
+    .btn { border: 0; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+    .btn-cancel { background:#ff5b5b; color:#fff; }
+    .btn-cancel:hover { filter: brightness(1.1); }
+    .empty { padding: 16px; background:#191522; border-radius:12px; }
+    a.link { color:#9ad0ff; text-decoration: none; }
+    a.link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+    <h1>My Reservations</h1>
+    <nav>
+      <a class="link" href="{% url 'rooms' %}">← Back to Rooms</a>
+    </nav>
+  </header>
+
+  {% if reservations %}
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Room</th>
+          <th>Size</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th style="width:1%;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in reservations %}
+          <tr>
+            <td>#{{ r.id }}</td>
+            <td>{{ r.roomnumber }}</td>
+            <td>{{ r.roomsize }}</td>
+            <td>{{ r.date }}</td>
+            <td>{{ r.time }}</td>
+            <td>
+              <form method="post" onsubmit="return confirm('Cancel this reservation?');">
+                {% csrf_token %}
+                <input type="hidden" name="rid" value="{{ r.id }}">
+                <button type="submit" class="btn btn-cancel">Cancel</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty">
+      You have no reservations yet. <a class="link" href="{% url 'rooms' %}">Find a room →</a>
+    </div>
+  {% endif %}
+</body>
+</html>

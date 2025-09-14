@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="refresh" content="2;url={% url target %}">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Loading…</title>
+        <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    /* Fullscreen loader with SAME background (no fade) */
+    .loader {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: #0d0a12 url("{% static 'website/blankbg.png' %}") center / cover no-repeat fixed;
+      /* change path if needed */
+    }
+
+    /* Spinning PNG in the middle */
+    .loader__icon {
+      width: 230px;
+      height: 230px;
+      object-fit: contain;
+      animation: spin 3.3s linear infinite;
+      filter: drop-shadow(0 10px 24px rgba(0, 0, 0, .35));
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+        </style>
+    </head>
+    <body>
+        <!-- Loading overlay -->
+        <div class="loader">
+            <img class="loader__icon" src="{% static 'website/spinner.png' %}" alt="Loading…">
+        </div>
+    </body>
+</html>

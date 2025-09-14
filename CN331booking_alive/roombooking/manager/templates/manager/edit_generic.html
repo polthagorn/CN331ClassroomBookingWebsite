@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 24px; }
+    form { max-width: 640px; display: grid; gap: 12px; }
+    input, select { padding: 8px 10px; border: 1px solid #ccc; border-radius: 8px; }
+    .btn { padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; background: #fff; cursor: pointer; }
+    .row { display: flex; gap: 8px; }
+    a { text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>{{ title }}</h1>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="row">
+      <button class="btn">Save</button>
+      <a class="btn" href="{% url 'manager_dashboard' %}">Back</a>
+    </div>
+  </form>
+</body>
+</html>

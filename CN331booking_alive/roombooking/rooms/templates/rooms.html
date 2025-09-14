@@ -1,0 +1,388 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Room Selection • BookingDome (Clean)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'mystyles/rooms.css' %}">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Raleway:wght@400;600&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+
+  <main>
+    <h1 class="title">Room Selection</h1>
+
+    <a href="{% url 'profile' %}" class="account-fab" title="My Account">Account</a>
+
+    <section class="grid">
+      <!-- SMALL -->
+      <article class="card" aria-label="Small room">
+        <div class="card__inner">
+          <div class="card__face card__front">
+            <img src="{% static 'images/room-small.png' %}" alt="Small room">
+          </div>
+          <div class="card__face card__back">
+            <h3>Small Room</h3>
+            <ul>
+              <li>Up to 8 people</li>
+              <li>Whiteboard &amp; Wi-Fi</li>
+              <li>1-hour reservation</li>
+            </ul>
+            <button class="choose" data-target="#resvSmall">Select</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- MEDIUM -->
+      <article class="card" aria-label="Medium room">
+        <div class="card__inner">
+          <div class="card__face card__front">
+            <img src="{% static 'images/room-medium.png' %}" alt="Medium room">
+          </div>
+          <div class="card__face card__back">
+            <h3>Medium Room</h3>
+            <ul>
+              <li>Up to 20 people</li>
+              <li>Projector &amp; Wi-Fi</li>
+              <li>1-hour reservation</li>
+            </ul>
+            <button class="choose" data-target="#resvMedium">Select</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- LARGE -->
+      <article class="card" aria-label="Large room">
+        <div class="card__inner">
+          <div class="card__face card__front">
+            <img src="{% static 'images/room-large.png' %}" alt="Large room">
+          </div>
+          <div class="card__face card__back">
+            <h3>Large Room</h3>
+            <ul>
+              <li>50+ seating</li>
+              <li>Stage &amp; A/V</li>
+              <li>1-hour reservation</li>
+            </ul>
+            <button class="choose" data-target="#resvLarge">Select</button>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <!-- ================= OLD POPUPS (FIXED: single form, no nesting) ================= -->
+
+  <!-- SMALL POPUP -->
+  <div class="resv-sheet" id="resvSmall" aria-hidden="true">
+    <div class="resv-card" role="dialog" aria-modal="true" aria-labelledby="resvTitleSmall">
+      <button class="resv-close" aria-label="Close">✕</button>
+      <h2 id="resvTitleSmall" class="resv-title">Small Room — Details</h2>
+      <p class="resv-subtitle">Best for quick huddles</p>
+      <div class="resv-content">
+        <form action="" method="POST" class="space-y-3">
+          {% csrf_token %}
+          <h3 class="text-xl font-semibold text-gray-800">Pick a Date</h3>
+
+          <label for="date_small" class="block text-sm font-medium text-gray-700">Date</label>
+          <input type="date" id="date_small" name="date"
+            value="{{ date|default:'' }}"
+            class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required>
+
+          <label for="classroom_small" class="block text-sm font-medium text-gray-700">Pick a room</label>
+          <select id="classroom_small" name="classroom" required class="w-full px-3 py-2 border rounded-lg bg-white text-gray-900">
+            <option value="" disabled {% if not classroom %}selected{% endif %}>— choose —</option>
+            {% for sc in smallclassroom %}
+            <option value="{{ sc }}" {% if classroom == sc %}selected{% endif %}>{{ sc }}</option>
+            {% endfor %}
+          </select>
+
+          <div class="pt-2">
+            <button type="submit" class="btn-secondary" name="button_type" value="small_time_search">Get time</button>
+            <button type="button" class="btn-secondary" data-close>Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEDIUM POPUP -->
+  <div class="resv-sheet" id="resvMedium" aria-hidden="true">
+    <div class="resv-card" role="dialog" aria-modal="true" aria-labelledby="resvTitleMedium">
+      <button class="resv-close" aria-label="Close">✕</button>
+      <h2 id="resvTitleMedium" class="resv-title">Medium Room — Details</h2>
+      <p class="resv-subtitle">Workshops & team meetings</p>
+      <div class="resv-content">
+        <form action="" method="POST" class="space-y-3">
+          {% csrf_token %}
+          <h3 class="text-xl font-semibold text-gray-800">Pick a Date</h3>
+
+          <label for="date_medium" class="block text-sm font-medium text-gray-700">Date</label>
+          <input type="date" id="date_medium" name="date"
+            value="{{ date|default:'' }}"
+            class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required>
+
+          <label for="classroom_medium" class="block text-sm font-medium text-gray-700">Pick a room</label>
+          <select id="classroom_medium" name="classroom" required class="w-full px-3 py-2 border rounded-lg bg-white text-gray-900">
+            <option value="" disabled {% if not classroom %}selected{% endif %}>— choose —</option>
+            {% for mc in mediumclassroom %}
+            <option value="{{ mc }}" {% if classroom == mc %}selected{% endif %}>{{ mc }}</option>
+            {% endfor %}
+          </select>
+
+          <div class="pt-2">
+            <button type="submit" class="btn-secondary" name="button_type" value="medium_time_search">Get time</button>
+            <button type="button" class="btn-secondary" data-close>Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- LARGE POPUP -->
+  <div class="resv-sheet" id="resvLarge" aria-hidden="true">
+    <div class="resv-card" role="dialog" aria-modal="true" aria-labelledby="resvTitleLarge">
+      <button class="resv-close" aria-label="Close">✕</button>
+      <h2 id="resvTitleLarge" class="resv-title">Large Room — Details</h2>
+      <p class="resv-subtitle">Events, town halls & conferences</p>
+      <div class="resv-content">
+        <form action="" method="POST" class="space-y-3">
+          {% csrf_token %}
+          <h3 class="text-xl font-semibold text-gray-800">Pick a Date</h3>
+
+          <label for="date_large" class="block text-sm font-medium text-gray-700">Date</label>
+          <input type="date" id="date_large" name="date"
+            value="{{ date|default:'' }}"
+            class="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required>
+
+          <label for="classroom_large" class="block text-sm font-medium text-gray-700">Pick a room</label>
+          <select id="classroom_large" name="classroom" required class="w-full px-3 py-2 border rounded-lg bg-white text-gray-900">
+            <option value="" disabled {% if not classroom %}selected{% endif %}>— choose —</option>
+            {% for lc in largeclassroom %}
+            <option value="{{ lc }}" {% if classroom == lc %}selected{% endif %}>{{ lc }}</option>
+            {% endfor %}
+          </select>
+
+          <div class="pt-2">
+            <button type="submit" class="btn-secondary" name="button_type" value="large_time_search">Get time</button>
+            <button type="button" class="btn-secondary" data-close>Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= NEW TIME POPUPS (date + room shown, pretty time buttons) ================= -->
+
+  <!-- SMALL time -->
+  <div class="resv-sheet" id="timeSmall" aria-hidden="true">
+    <div class="resv-card" role="dialog" aria-modal="true" aria-labelledby="timeTitleSmall">
+      <button class="resv-close" aria-label="Close">✕</button>
+      <h2 id="timeTitleSmall" class="resv-title">Pick a Time — Small</h2>
+      <p class="resv-subtitle">Available slots for {{ date }} / Room {{ classroom }}</p>
+
+      <form method="POST" class="space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="submit_type" value="small_submit">
+        <input type="hidden" name="date" value="{{ date }}">
+        <input type="hidden" name="classroom" value="{{ classroom }}">
+        <input type="hidden" name="time" id="timeSmallInput">
+
+        <div class="grid grid-cols-3 gap-3">
+          {% for t in s_times %}
+          <button type="button"
+                  class="px-4 py-2 rounded-xl border shadow hover:shadow-lg transition
+                         hover:-translate-y-0.5 active:translate-y-0
+                         bg-gradient-to-r from-gray-50 to-white
+                         hover:ring-2 hover:ring-orange-400"
+                  onclick="pickTime('timeSmallInput','{{ t }}', this)">
+            {{ t }}:00
+          </button>
+          {% empty %}
+          <div class="col-span-3 text-center text-gray-500">No times available</div>
+          {% endfor %}
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" class="btn-secondary" data-close>Close</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-orange-500 text-white
+                                   hover:bg-orange-600 shadow hover:shadow-lg transition">
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MEDIUM time -->
+  <div class="resv-sheet" id="timeMedium" aria-hidden="true">
+    <div class="resv-card" role="dialog" aria-modal="true" aria-labelledby="timeTitleMedium">
+      <button class="resv-close" aria-label="Close">✕</button>
+      <h2 id="timeTitleMedium" class="resv-title">Pick a Time — Medium</h2>
+      <p class="resv-subtitle">Available slots for {{ date }} / Room {{ classroom }}</p>
+
+      <form method="POST" class="space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="submit_type" value="medium_submit">
+        <input type="hidden" name="date" value="{{ date }}">
+        <input type="hidden" name="classroom" value="{{ classroom }}">
+        <input type="hidden" name="time" id="timeMediumInput">
+
+        <div class="grid grid-cols-3 gap-3">
+          {% for t in m_times %}
+          <button type="button"
+                  class="px-4 py-2 rounded-xl border shadow hover:shadow-lg transition
+                         hover:-translate-y-0.5 active:translate-y-0
+                         bg-gradient-to-r from-gray-50 to-white
+                         hover:ring-2 hover:ring-orange-400"
+                  onclick="pickTime('timeMediumInput','{{ t }}', this)">
+            {{ t }}:00
+          </button>
+          {% empty %}
+          <div class="col-span-3 text-center text-gray-500">No times available</div>
+          {% endfor %}
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" class="btn-secondary" data-close>Close</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-orange-500 text-white
+                                   hover:bg-orange-600 shadow hover:shadow-lg transition">
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- LARGE time -->
+  <div class="resv-sheet" id="timeLarge" aria-hidden="true">
+    <div class="resv-card" role="dialog" aria-modal="true" aria-labelledby="timeTitleLarge">
+      <button class="resv-close" aria-label="Close">✕</button>
+      <h2 id="timeTitleLarge" class="resv-title">Pick a Time — Large</h2>
+      <p class="resv-subtitle">Available slots for {{ date }} / Room {{ classroom }}</p>
+
+      <form method="POST" class="space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="submit_type" value="large_submit">
+        <input type="hidden" name="date" value="{{ date }}">
+        <input type="hidden" name="classroom" value="{{ classroom }}">
+        <input type="hidden" name="time" id="timeLargeInput">
+
+        <div class="grid grid-cols-3 gap-3">
+          {% for t in l_times %}
+          <button type="button"
+                  class="px-4 py-2 rounded-xl border shadow hover:shadow-lg transition
+                         hover:-translate-y-0.5 active:translate-y-0
+                         bg-gradient-to-r from-gray-50 to-white
+                         hover:ring-2 hover:ring-orange-400"
+                  onclick="pickTime('timeLargeInput','{{ t }}', this)">
+            {{ t }}:00
+          </button>
+          {% empty %}
+          <div class="col-span-3 text-center text-gray-500">No times available</div>
+          {% endfor %}
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" class="btn-secondary" data-close>Close</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-orange-500 text-white
+                                   hover:bg-orange-600 shadow hover:shadow-lg transition">
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= JS ================= -->
+  <!-- Auto-open flag set by Django OUTSIDE JS (no linter errors) -->
+  {% if s_times %}<script>window.__AUTO_OPEN = '#timeSmall';</script>{% endif %}
+  {% if m_times %}<script>window.__AUTO_OPEN = '#timeMedium';</script>{% endif %}
+  {% if l_times %}<script>window.__AUTO_OPEN = '#timeLarge';</script>{% endif %}
+
+  <script>
+    // --- Helpers & Modal controls ---
+    const modals = Array.from(document.querySelectorAll('.resv-sheet'));
+
+    function openModal(selOrEl) {
+      const modal = typeof selOrEl === 'string' ? document.querySelector(selOrEl) : selOrEl;
+      if (!modal) return;
+      closeAll();
+      modal.classList.add('resv--open');
+      modal.setAttribute('aria-hidden', 'false');
+      const closeBtn = modal.querySelector('.resv-close');
+      if (closeBtn) closeBtn.focus();
+    }
+    function closeModal(modal) {
+      modal.classList.remove('resv--open');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    function closeAll() {
+      modals.forEach(m => closeModal(m));
+    }
+
+    // Define pickTime helper used by buttons
+    function pickTime(inputId, val, btnEl) {
+      const input = document.getElementById(inputId);
+      if (input) input.value = val;
+
+      // simple visual selection highlight
+      const group = btnEl.parentElement;
+      if (group) {
+        group.querySelectorAll('button[type="button"]').forEach(b => b.classList.remove('ring-2', 'ring-orange-400'));
+      }
+      btnEl.classList.add('ring-2', 'ring-orange-400');
+    }
+
+    // Open details modals from cards
+    document.querySelectorAll('.choose').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetSel = btn.getAttribute('data-target');
+        if (targetSel) openModal(targetSel);
+      });
+    });
+
+    // Close buttons
+    document.querySelectorAll('.resv-close, [data-close]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const modal = btn.closest('.resv-sheet');
+        if (modal) closeModal(modal);
+      });
+    });
+
+    // Click outside to close
+    modals.forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal(modal);
+      });
+    });
+
+    // ESC to close
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeAll();
+    });
+
+    // Auto-open time popup when times are returned
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.__AUTO_OPEN) openModal(window.__AUTO_OPEN);
+    });
+
+    // Optional: on mobile, tap card to flip
+    if (window.matchMedia && window.matchMedia('(hover: none)').matches) {
+      document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', () => card.classList.toggle('is-flipped'));
+      });
+    }
+  </script>
+</body>
+</html>

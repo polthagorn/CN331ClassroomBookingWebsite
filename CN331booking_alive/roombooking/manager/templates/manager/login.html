@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Manager Login</title>
+  <style>
+    body{font-family:system-ui,Arial,sans-serif;display:grid;place-items:center;height:100dvh;margin:0;background:#0d0a12;color:#fff}
+    .card{width:min(380px,92%);background:#18141f;border:1px solid #2a2533;border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    h1{margin:0 0 12px;font-size:22px}
+    label{display:block;font-size:14px;margin:10px 0 6px}
+    input{width:100%;padding:10px;border:1px solid #3b3346;background:#120e17;color:#fff;border-radius:10px;outline:none}
+    .btn{margin-top:14px;width:100%;padding:10px;border-radius:10px;border:1px solid #6b5cff;background:#6b5cff;color:white;cursor:pointer}
+    .msg{margin-top:10px;color:#ff8c8c;min-height:1em}
+    a{color:#bbb}
+  </style>
+</head>
+<body>
+  <form class="card" method="POST">
+    <h1>Manager Login</h1>
+    {% csrf_token %}
+    <label>Username</label>
+    {{ form.userName }}
+    <label>Password</label>
+    {{ form.password }}
+    <button class="btn">Sign in</button>
+    <div class="msg">{{ msg }}</div>
+  </form>
+</body>
+</html>

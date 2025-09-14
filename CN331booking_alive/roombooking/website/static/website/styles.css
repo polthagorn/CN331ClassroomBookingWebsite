@@ -1,0 +1,401 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&family=Raleway:wght@400;600&display=swap');
+
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  height: 100vh;
+
+  /* ⭐ stars (radial gradients) + 🌑 overlay + 🖼 your image */
+  background:
+
+    url("loginbg.png") no-repeat center center;
+
+  /* each layer gets its own size */
+  background-size:
+    cover;
+
+  background-attachment: fixed;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #fff;
+  text-align: center;
+  font-family: 'Raleway', sans-serif;
+
+
+  /* center content */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-family: 'Raleway', sans-serif;
+  color: #fff;
+  text-align: center;
+}
+
+/* Content block */
+.center-box {
+  position: relative;
+  z-index: 1; /* stays above background */
+}
+
+.moon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  margin: 0;
+  font-weight: 400;
+  font-size: 1.5rem;
+  color: #fdd5b1;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 4.5rem;
+  margin: 0.5rem 0 2rem;
+  color: #ffe7cc;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 28px;
+  background: #f4a261;
+  color: #1e1533;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform .12s ease, background .2s ease;
+}
+.btn:hover {
+  background: #f9cf62;
+  transform: translateY(-1px);
+  box-shadow: 
+    0 0 10px #fce713,
+    0 0 20px #f79911,
+    0 0 30px #c95102,
+    0 0 40px #b24302;
+}
+
+
+
+/* Rise from bottom */
+@keyframes riseFromBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(190px); /* small offset, not full viewport */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.center-box > * {
+  animation: riseFromBottom 1s ease-out forwards;
+}
+
+/* Stagger sequence */
+.center-box h2 { animation-delay: 0.05s; }
+.center-box h1 { animation-delay: 0.07s; }
+.center-box .btn { animation-delay: 0.1s; }
+
+/* ===== Slide-up LOGIN (styled like your reference) ===== */
+.sheet {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;              /* card at bottom center */
+  background: rgba(0,0,0,.35);          /* dim backdrop */
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+  z-index: 50;
+}
+
+.sheet__card {
+  width: min(520px, 92vw);
+  margin: 24px;
+  padding: 28px 28px 22px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #f8e2bf 0%, #f7dcb2 100%); /* soft peach gradient */
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 24px 80px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.08);
+
+  transform: translateY(110%);          /* start off-screen bottom */
+  transition: transform .5s cubic-bezier(.2,.8,.2,1);
+  position: relative;
+}
+
+.sheet--open { opacity: 1; pointer-events: auto; }
+.sheet--open .sheet__card { transform: translateY(0); }
+
+/* Header */
+.sheet__title {
+  margin: 0 0 6px;
+  font: 700 4rem/1.1 ;
+  /* sans-serif; */
+  color: #2c2236;
+  text-align: center;
+  font-size: 10rem;
+  
+}
+.sheet__subtitle {
+  margin: 0 0 20px;
+  text-align: center;
+  font-size: 0.98rem;
+  color: #4b3f4f;
+}
+
+/* Close (X) */
+.sheet__close {
+  position: absolute; top: 10px; right: 12px;
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid rgba(0,0,0,.06);
+  color: #2c2236;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background .15s ease, transform .12s ease;
+}
+.sheet__close:hover { background: rgba(255,255,255,.6); transform: translateY(-1px); }
+
+/* Form fields */
+.sheet__form { margin-top: px; }
+.field { display: block; margin: 12px 0 10px; }
+.field__label {
+  display: block;
+  margin-bottom: 6px;
+  color: #4b3f4f;
+  font-size: 0.95rem;
+}
+.field__input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);
+  color: #2b2330;
+  transition: box-shadow .15s ease, transform .08s ease;
+}
+.field__input::placeholder { color: #9a8ea1; }
+.field__input:focus {
+  box-shadow: 0 0 0 4px rgba(244,162,97,.25), inset 0 0 0 1px rgba(0,0,0,.1);
+}
+
+/* Primary action */
+.sheet__action {
+  width: 100%;
+  margin-top: 14px;
+  height: 46px;
+  border: 0;
+  border-radius: 12px;
+  background: #f4a261;      /* your accent */
+  color: #1e1533;
+  font-weight: 800;
+  letter-spacing: .2px;
+  cursor: pointer;
+  transition: background .18s ease, transform .12s ease;
+}
+.sheet__action:hover { background: #e68b4f; transform: translateY(-1px); }
+
+/* Forgot link */
+.sheet__link {
+  display: block;
+  margin: 12px auto 2px;
+  text-align: center;
+  text-decoration: none;
+  color: #4b3f4f;
+  font-size: .95rem;
+}
+.sheet__link:hover { text-decoration: underline; }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .sheet, .sheet__card { transition: none; }
+  .sheet__card { transform: none; }
+}
+
+/* === minimal tweaks per your request === */
+
+/* 1) Make the login box longer (wider) and less round */
+.sheet__card {
+  /* revert width if you previously changed it */
+  width: min(520px, 92vw);      /* remove this line if you want to keep your current width */
+
+  /* increase vertical space */
+  min-height: 540px;            /* tweak: 520–640px as you like */
+  padding-top: 40px;
+  padding-bottom: 36px;
+}
+
+/* 2) Left-align the field labels (and form content) */
+.sheet__form { 
+  text-align: left;          /* override body center */
+}
+.field__label {
+  text-align: left;          /* ensure label text is left */
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* 3) Make the Sign In button square */
+.sheet__action {
+  border-radius: 0;          /* square corners */
+  height: 50px;              /* optional: a touch taller */
+  font-weight: 800;
+}
+
+/* keep the header centered (no change to your look) */
+.sheet__title,
+.sheet__subtitle { text-align: center; }
+
+/* === size & spacing upgrades (login box only) === */
+
+/* Bigger card with comfy padding; stays centered */
+
+
+/* Title/subtitle slightly larger, still centered */
+.sheet__title   { font-size: 2.1rem; }
+.sheet__subtitle{ font-size: 1.05rem; }
+
+/* Center the form block within the card, but keep labels left-aligned */
+.sheet__form {
+  max-width: 520px;          /* keeps lines from getting too wide */
+  margin: 0 auto;            /* center the form in the card */
+  display: grid;
+  gap: 18px;                 /* even spacing between fields/button */
+}
+
+.field { margin: 0; }        /* gap now handled by .sheet__form */
+.field__label {
+  font-size: 1.05rem;        /* a bit bigger label */
+  margin-top: 10px;
+}
+
+/* Bigger inputs */
+.field__input {
+  height: 54px;              /* was 46px */
+  font-size: 1.05rem;
+  padding: 0 16px;
+  border-radius: 12px;
+}
+
+/* Rounded-square primary button, larger & centered */
+.sheet__action {
+  width: 110px;              /* not full width → more “square-ish” */
+  height: 110px;              /* taller so it feels square, not flat */
+  margin: 100px auto 0;        /* center the button */
+  border-radius: 14px;       /* rounded-square (not pill, not sharp) */
+  font-size: 1.05rem;
+  letter-spacing: 0.3px;
+  font-weight: 800;
+}
+
+/* Forgot link: keep centered, give a touch more space */
+.sheet__link { margin: 14px auto 2px; font-size: 1rem; }
+
+/* === compact, balanced login layout (keep your look) === */
+
+/* Shorter card (less overall height) with tidy padding */
+.sheet__card {
+  min-height: 460px;          /* was 540+ — tweak 440–500 if you like */
+  padding: 32px 32px 26px;    /* comfortable but tighter than before */
+}
+
+/* Keep header centered, give a hair more space below */
+.sheet__title   { margin-bottom: 8px; }
+.sheet__subtitle{ margin-bottom: 18px; }
+
+/* Center the form block in the card, keep labels left-aligned */
+.sheet__form {
+  max-width: 520px;
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;                  /* consistent vertical rhythm */
+  text-align: left;
+}
+
+/* Labels: slightly larger + clear separation */
+.field__label {
+  font-size: 1.06rem;
+  margin-bottom: 8px;
+}
+
+/* Inputs: larger + easier to hit */
+.field__input {
+  height: 60px;               /* bigger input box */
+  font-size: 1.06rem;
+  padding: 0 18px;
+  border-radius: 12px;        /* keep your rounded input feel */
+}
+
+/* Sign In button: rounded-square vibe (not a skinny rectangle), bigger */
+.sheet__action {
+  width: 220px;               /* center-sized, not full-width */
+  height: 56px;               /* near-square feel with text */
+  margin: 10px auto 0;        /* centered under fields */
+  border-radius: 12px;        /* rounded-square corners */
+  font-size: 1.06rem;
+  letter-spacing: 0.3px;
+  font-weight: 800;
+}
+
+/* Forgot link: a touch more breathing room */
+.sheet__link { margin: 14px auto 2px; }
+
+/* === Tall-rectangle login card === */
+.sheet__card {
+  /* narrower width + taller height = tall rectangle */
+  width: min(420px, 92vw);        /* was 520px — make it slimmer */
+  min-height: 520px;              /* make it tall (try 640–760px if you want) */
+  border-radius: 12px;            /* subtle rounding to keep the shape crisp */
+  padding: 40px 32px 32px;        /* balanced spacing */
+}
+
+/* keep the form tidy and centered inside the tall shape */
+.sheet__form {
+  max-width: 360px;               /* prevents fields from feeling too wide */
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+}
+
+/* bigger, comfortable inputs that fit the tall look */
+.field__input {
+  height: 60px;
+  font-size: 1.06rem;
+  padding: 0 18px;
+  border-radius: 12px;
+}
+
+/* rounded-square Sign In button, centered */
+.sheet__action {
+  width: 280px;
+  height: 60px;
+  border-radius: 12px;
+  margin: 10px auto 0;
+  font-size: 1.06rem;
+  font-weight: 750;
+}
+
+/* if the card ever gets too tall for very small screens, allow internal scroll */
+@media (max-height: 680px) {
+  .sheet__card { 
+    max-height: 90vh; 
+    overflow: auto; 
+  }
+}

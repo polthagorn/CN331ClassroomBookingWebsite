@@ -1,0 +1,114 @@
+/* Minimal styles, keeping flip and popup. Derived from your original file, with form-related rules removed. */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body{
+  margin:0; min-height:100vh;
+  background:#0d0a12 url("/static/images/lunabg.png") center/cover no-repeat fixed;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Raleway',sans-serif; color:#2c2236;
+}
+
+.title{
+  margin:0 0 30px 7px;
+  font-weight:700; font-size:2.25rem; line-height:1.15;
+  color:#dac7a8;
+}
+
+.grid{
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:26px; justify-items:center;
+}
+
+.card{ position:relative; perspective:1000px; }
+.card::after{
+  content:""; position:absolute; left:10%; right:10%; bottom:-10px; height:24px;
+  background:radial-gradient(ellipse at center, rgba(0,0,0,.35) 0%, rgba(0,0,0,.18) 40%, rgba(0,0,0,0) 70%);
+  filter:blur(6px); opacity:.6; pointer-events:none; transition:opacity .25s ease; z-index:0;
+}
+.card__inner{
+  width:260px; height:410px; border-radius:12px;
+  position:relative; z-index:1;
+  transform-style:preserve-3d; -webkit-transform-style:preserve-3d;
+  transition:transform .6s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease;
+  box-shadow:0 12px 24px rgba(0,0,0,.18);
+}
+.card:hover .card__inner, .card.is-flipped .card__inner{
+  transform:rotateY(180deg); box-shadow:0 28px 60px rgba(0,0,0,.35);
+}
+.card:hover::after, .card.is-flipped::after{ opacity:.85; }
+
+.card__face{
+  position:absolute; inset:0; border-radius:12px; overflow:hidden;
+  backface-visibility:hidden; -webkit-backface-visibility:hidden; transform:translateZ(0);
+  box-shadow:0 10px 24px rgba(0,0,0,.12);
+}
+.card__front{ background:#000; }
+.card__front img{ width:100%; height:100%; object-fit:cover; display:block; }
+.card__back{
+  transform:rotateY(180deg);
+  background:#c2bcae; padding:20px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+}
+.card__back h3{ margin:6px 0 10px; font:600 1.3rem/1 'Raleway',sans-serif; }
+.card__back ul{ margin:0 0 14px 0; padding:0; list-style:none; line-height:1.5; }
+
+.choose{
+  display:inline-block; padding:10px 18px;
+  background:#f4a261; color:#1e1533; border-radius:10px; font-weight:700; border:0; cursor:pointer;
+  transition:transform .12s ease, background .2s ease;
+}
+.choose:hover{ background:#e68b4f; transform:translateY(-1px); }
+
+/* Popup */
+.resv-sheet{
+  position:fixed; inset:0; display:grid; place-items:center;
+  background:rgba(0,0,0,.35); backdrop-filter:blur(2px);
+  opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:50;
+}
+.resv--open{ opacity:1; pointer-events:auto; }
+
+.resv-card{
+  width:min(560px,92vw); margin:24px; padding:28px;
+  border-radius:16px;
+  background:linear-gradient(180deg,#f8e2bf,#f7dcb2);
+  border:1px solid rgba(0,0,0,.06);
+  box-shadow:0 24px 80px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.08);
+  position:relative;
+  transform:translateY(40px); opacity:0;
+  transition:transform .45s cubic-bezier(.2,.8,.2,1), opacity .25s ease;
+}
+.resv--open .resv-card{ transform:translateY(0); opacity:1; }
+
+.resv-close{
+  position:absolute; top:10px; right:12px; width:36px; height:36px;
+  display:grid; place-items:center; border-radius:8px;
+  background:transparent; border:1px solid rgba(0,0,0,.06); color:#2c2236;
+  cursor:pointer;
+}
+
+.resv-title{ margin:0 0 6px; text-align:center; font:600 1.9rem/1.1 'Playfair Display',serif; color:#2c2236; }
+.resv-subtitle{ margin:0 0 10px; text-align:center; color:#4b3f4f; }
+.resv-content{ max-width:520px; margin:0 auto 18px; text-align:center; }
+.muted{ opacity:.8; }
+
+.resv-actions{ display:flex; gap:10px; justify-content:center; }
+.btn-secondary{
+  height:44px; padding:0 16px; border-radius:10px; border:1px solid rgba(0,0,0,.08); font-weight:700; cursor:pointer;
+  background:#fff;
+}
+
+/* Floating Account button */
+.account-fab{
+  position: fixed; top: 16px; right: 16px; padding: 10px 14px;
+  background: #f4a261; color: #1e1533; text-decoration: none; font-weight: 800;
+  border-radius: 10px; border: 1px solid rgba(0,0,0,.06);
+  box-shadow: 0 10px 24px rgba(0,0,0,.18); z-index: 100;
+  transition: transform .12s ease, filter .2s ease;
+}
+.account-fab:hover { transform: translateY(-1px); filter: brightness(.95); }
+
+@media (max-width:960px){
+  .grid{ grid-template-columns:1fr; gap:18px; }
+  .card__inner{ width:300px; height:380px; }
+  .card::after{ bottom:-6px; height:18px; filter:blur(4px); }
+}

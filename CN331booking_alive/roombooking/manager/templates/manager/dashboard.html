@@ -1,0 +1,183 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Manager Dashboard</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 24px; }
+    h1 { margin-bottom: 8px; }
+    .grid { display: grid; gap: 24px; grid-template-columns: 1fr; }
+    @media (min-width: 1100px){ .grid { grid-template-columns: 1fr 1fr; } }
+    section { border: 1px solid #ddd; border-radius: 12px; padding: 16px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { border-bottom: 1px solid #eee; padding: 8px; text-align: left; }
+    th { background: #fafafa; }
+    .row-actions { display: flex; gap: 8px; }
+    .btn { padding: 6px 10px; border-radius: 8px; border: 1px solid #ccc; background: #fff; cursor: pointer; }
+    .btn-primary { border-color: #2d6cdf; }
+    .btn-danger { border-color: #d92d20; color: #d92d20; }
+    form.inline { display: inline; }
+    .add-form { margin-top: 8px; display: grid; gap: 8px; grid-template-columns: repeat(6, minmax(0,1fr)); }
+    .add-form input { padding: 6px 8px; border: 1px solid #ccc; border-radius: 8px; }
+    .add-form .full { grid-column: 1 / -1; }
+  </style>
+</head>
+<body>
+  <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+  <div>Manager: <b>{{ manager_name }}</b></div>
+  <form method="POST" action="{% url 'manager_logout' %}">
+    {% csrf_token %}
+    <button class="btn">Log out</button>
+  </form>
+</header>
+  <h1>Manager Dashboard</h1>
+  <p>List, add, edit, and delete anything from <b>Account</b>, <b>Classroom</b>, and <b>Reservation</b>.</p>
+
+  <div class="grid">
+    <!-- ACCOUNTS -->
+    <section>
+      <h2>Accounts</h2>
+
+      <!-- Add new -->
+      <form class="add-form" method="POST" action="{% url 'account_create' %}">
+        {% csrf_token %}
+        {{ account_form.userName }} 
+        {{ account_form.password }}
+        <button class="btn btn-primary">Add Account</button>
+      </form>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Username</th><th>Password</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in accounts %}
+          <tr>
+            <td>{{ a.id }}</td>
+            <td>{{ a.userName }}</td>
+            <td>{{ a.password }}</td>
+            <td>
+              <div class="row-actions">
+                <a class="btn" href="{% url 'account_edit' a.id %}" name "">Edit</a>
+                <form class="inline" method="POST" action="{% url 'account_delete' a.id %}">
+                  {% csrf_token %}
+                  <button class="btn btn-danger" onclick="return confirm('Delete this account?')">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4">No accounts.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- CLASSROOMS -->
+    <section>
+      <h2>Classrooms</h2>
+
+      <!-- Add new -->
+      <form class="add-form" method="POST" action="{% url 'classroom_create' %}">
+        {% csrf_token %}
+        {{ classroom_form.roomnumber }}
+        {{ classroom_form.roomsize }}
+        {{ classroom_form.roomcapacity }}
+        {{ classroom_form.start_time }}
+        {{ classroom_form.stop_time }}
+        {{ classroom_form.status }}
+        <button class="btn btn-primary">Add Classroom</button>
+      </form>
+
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Room</th><th>Size</th><th>Cap</th><th>Start</th><th>Stop</th><th>Status</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in classrooms %}
+          <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.roomnumber }}</td>
+            <td>{{ r.roomsize }}</td>
+            <td>{{ r.roomcapacity }}</td>
+            <td>{{ r.start_time }}</td>
+            <td>{{ r.stop_time }}</td>
+            <td>{{ r.status }}</td>
+            <td>
+              <div class="row-actions">
+                <a class="btn" href="{% url 'classroom_edit' r.id %}">Edit</a>
+                <form class="inline" method="POST" action="{% url 'classroom_delete' r.id %}">
+                  {% csrf_token %}
+                  <button class="btn btn-danger" onclick="return confirm('Delete this classroom?')">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="8">No classrooms.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- RESERVATIONS -->
+    <section>
+      <h2>Reservations</h2>
+
+      <!-- Add new -->
+      <form class="add-form" method="POST" action="{% url 'reservation_create' %}">
+        {% csrf_token %}
+        <!-- Works if user is TextField (text input) OR ForeignKey (select) -->
+        {{ reservation_form.user }}
+        {{ reservation_form.roomnumber }}
+        {{ reservation_form.roomsize }}
+        {{ reservation_form.time }}
+        {{ reservation_form.date }}
+        <button class="btn btn-primary">Add Reservation</button>
+      </form>
+
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>User</th><th>Room</th><th>Size</th><th>Date</th><th>Time</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for z in reservations %}
+          <tr>
+            <td>{{ z.id }}</td>
+            <td>
+              {# If ForeignKey, z.user will render like "Account object"; if TextField, it's the text. #}
+              {{ z.user }}
+            </td>
+            <td>{{ z.roomnumber }}</td>
+            <td>{{ z.roomsize }}</td>
+            <td>{{ z.date }}</td>
+            <td>{{ z.time }}</td>
+            <td>
+              <div class="row-actions">
+                <a class="btn" href="{% url 'reservation_edit' z.id %}">Edit</a>
+                <!-- Cancel button = delete -->
+                <form class="inline" method="POST" action="{% url 'reservation_delete' z.id %}">
+                  {% csrf_token %}
+                  <button class="btn btn-danger" title="Cancel this reservation" onclick="return confirm('Cancel (delete) this reservation?')">
+                    Cancel
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7">No reservations.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </div>
+</body>
+</html>

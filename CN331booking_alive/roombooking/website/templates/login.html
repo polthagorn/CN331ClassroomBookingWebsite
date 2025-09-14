@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BookingDome</title>
+  <link rel="stylesheet" href="{% static 'website/styles.css' %}">
+</head>
+<body>
+  <div class="center-box">
+    <h2>Welcome to</h2>
+    <h1>BookingDome</h1>
+    <a href="#" class="btn" id="getStartedBtn">Get Started</a>
+  </div>
+
+  <!-- LOGIN SHEET -->
+  <div class="sheet" id="loginSheet" aria-hidden="true">
+  <div class="sheet__card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <button class="sheet__close" aria-label="Close">✕</button>
+
+    <h2 id="loginTitle" class="sheet__title">Login</h2>
+
+    <form class="sheet__form" method="POST" action="" novalidate>
+      {% csrf_token %}
+      <label class="field">
+        <span class="field__label">Username</span>
+        <input class="field__input" type="text" name="login_username" placeholder="Enter username" required>
+      </label>
+      {% if user_name_error %}
+        <div style="color: #f00000;">{{ user_name_error }}</div>
+      {% endif %}
+
+
+      <label class="field">
+        <span class="field__label">Password</span>
+        <input class="field__input" type="password" name="login_password" placeholder="Enter password" required>
+      </label>
+      {% if password_error %}
+        <div    style="color: #f00000;">{{ password_error }}</div>
+      {% endif %}
+      {% if password_correct %}
+        <div    style="color: #01f61e;">{{ password_correct }}</div>
+      {% endif %}
+
+      <button class="sheet__action" type="submit" name="submit_type" value="login">Sign In</button>
+      <a class="sheet__link" href="#" id="openSignup">Sign Up</a>
+    </form>
+  </div>
+</div>
+
+<!-- SIGN UP SHEET -->
+<div class="sheet" id="signupSheet" aria-hidden="true">
+  <div class="sheet__card" role="dialog" aria-modal="true" aria-labelledby="signupTitle">
+    <button class="sheet__close" aria-label="Close">✕</button>
+
+    <h2 id="signupTitle" class="sheet__title">Sign Up</h2>
+
+    <form class="sheet__form" action="" method="POST" novalidate>
+      {% csrf_token %}
+      <label class="field">
+        <span class="field__label">Username</span>
+        <input class="field__input" type="text" name="signup_username" placeholder="Choose a username" required>
+      </label>
+
+      <label class="field">
+        <span class="field__label">Password</span>
+        <input class="field__input" type="password" name="signup_password" placeholder="Create a password" required>
+      </label>
+      {% if password_length_error %}
+        <div    style="color: #f00000;">{{ password_length_error }}</div>
+      {% endif %}
+      {% if username_occupied %}
+        <div    style="color: #f00000;">{{ username_occupied }}</div>
+      {% endif %}
+      {% if username_created %}
+        <div    style="color: #01f61e;">{{ username_created }}</div>
+      {% endif %}
+
+      <button class="sheet__action" type="submit" name="submit_type" value="signup">Create Account</button>
+      <a class="sheet__link" href="#" id="openLogin">Back to Login</a>
+    </form>
+  </div>
+</div>
+
+
+  <!-- JS at end so DOM exists -->
+  <script>
+    // Helpers
+    function openSheet(el){ el.classList.add('sheet--open'); el.setAttribute('aria-hidden','false'); }
+    function closeSheet(el){ el.classList.remove('sheet--open'); el.setAttribute('aria-hidden','true'); }
+
+    const getStartedBtn = document.getElementById('getStartedBtn');
+    const loginSheet    = document.getElementById('loginSheet');
+    const signupSheet   = document.getElementById('signupSheet');
+
+    const loginCloseBtn  = loginSheet.querySelector('.sheet__close');
+    const signupCloseBtn = signupSheet.querySelector('.sheet__close');
+
+    const openSignupLink = document.getElementById('openSignup');
+    const openLoginLink  = document.getElementById('openLogin');
+
+    // Open login from hero
+    getStartedBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openSheet(loginSheet);
+    });
+
+    // Switch to Sign Up
+    openSignupLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeSheet(loginSheet);
+      openSheet(signupSheet);
+    });
+
+    // Back to Login
+    openLoginLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeSheet(signupSheet);
+      openSheet(loginSheet);
+    });
+
+    // Close on backdrop click
+    [loginSheet, signupSheet].forEach(sheet => {
+      sheet.addEventListener('click', (e) => {
+        if (e.target === sheet) closeSheet(sheet);
+      });
+    });
+
+    // Close buttons
+    loginCloseBtn.addEventListener('click', () => closeSheet(loginSheet));
+    signupCloseBtn.addEventListener('click', () => closeSheet(signupSheet));
+
+    // Esc to close whichever is open
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (loginSheet.classList.contains('sheet--open')) closeSheet(loginSheet);
+        if (signupSheet.classList.contains('sheet--open')) closeSheet(signupSheet);
+      }
+    });
+  </script>
+</body>
+</html>
