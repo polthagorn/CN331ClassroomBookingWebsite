@@ -19,4 +19,6 @@ urlpatterns = [
     path("account/<int:pk>/delete/", views.account_delete, name="account_delete"),
     path("classroom/<int:pk>/delete/", views.classroom_delete, name="classroom_delete"),
     path("reservation/<int:pk>/delete/", views.reservation_delete, name="reservation_delete"),
+
+    path("classroom/<int:pk>/toggle/", views.classroom_toggle, name="classroom_toggle"),
 ]

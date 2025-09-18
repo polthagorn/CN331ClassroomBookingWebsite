@@ -18,19 +18,102 @@
     .btn-primary { border-color: #2d6cdf; }
     .btn-danger { border-color: #d92d20; color: #d92d20; }
     form.inline { display: inline; }
+
+    /* เดิมของคุณ: add-form เป็น grid 6 คอลัมน์ (คงไว้) */
     .add-form { margin-top: 8px; display: grid; gap: 8px; grid-template-columns: repeat(6, minmax(0,1fr)); }
     .add-form input { padding: 6px 8px; border: 1px solid #ccc; border-radius: 8px; }
     .add-form .full { grid-column: 1 / -1; }
+
+    /* ===== ปรับฟอร์ม Add new ให้: หัวข้ออยู่บน + จบในบรรทัดเดียว (เลื่อนข้างได้) ===== */
+    .form-row{
+      display:flex !important;
+      align-items:flex-end;
+      gap:12px;
+      flex-wrap:nowrap;          /* จบในบรรทัดเดียว */
+      overflow-x:auto;           /* ถ้าเกินกว้าง ให้ลากเลื่อน */
+      padding-bottom:6px;
+    }
+    .form-row .f{
+      display:flex; flex-direction:column; gap:4px;
+      min-width:160px;           /* กันหดจนอ่านยาก */
+    }
+    .form-row .f label{
+      font-weight:700; font-size:12px; color:#374151; white-space:nowrap;
+    }
+    .form-row .f input,
+    .form-row .f select,
+    .form-row .f textarea{
+      height:34px; padding:4px 8px;
+      border:1px solid #cfcfcf; border-radius:8px;
+      font-size:14px; line-height:1.2;
+      width: 100px;              /* ขนาดมาตรฐานอ่านง่าย */
+      box-sizing:border-box;
+    }
+    /* ช่องที่ควรแคบลง */
+    .form-row .f input[type="time"],
+    .form-row .f input[type="date"],
+    .form-row .f select[size],
+    .form-row .f select[multiple]{ width: 140px; }
+
+    /* ปุ่มให้สูงพอดีกับช่อง */
+    .form-row .btn{ height:34px; padding:6px 12px; border-radius:8px; }
+
+    /* กัน layout grid เดิมของ .add-form มากระทบเมื่อใช้ .form-row */
+    .add-form.form-row{ grid-template-columns:none !important; }
+
+    /* ==== Compact one-line form (100px per field) ==== */
+  .add-form.form-row{
+    gap: 6px !important;          /* ลดช่องไฟระหว่างช่อง */
+    flex-wrap: nowrap !important;  /* อยู่บรรทัดเดียว */
+    overflow-x: auto;              /* ถ้าเกินกว้าง เลื่อนได้ */
+    padding-bottom: 4px;
+  }
+  .add-form.form-row .f{
+    display: flex; flex-direction: column;
+    gap: 2px !important;           /* ลดช่องไฟ label กับ input */
+    min-width: auto !important;
+  }
+  .add-form.form-row .f label{
+    font-size: 12px; font-weight: 700; color: #374151;
+    line-height: 1.1;
+    white-space: nowrap;
+    margin: 0;
+  }
+  .add-form.form-row .f input,
+  .add-form.form-row .f select,
+  .add-form.form-row .f textarea{
+    width: 125px !important;       /* กว้าง 100px ตามต้องการ */
+    min-width: 125px !important;
+    max-width: 125px !important;
+    height: 30px;                   /* เตี้ยลงให้ดูไม่อ้วน */
+    padding: 2px 6px;               /* ช่องไฟในกล่องเล็กลง */
+    margin: 0;                      /* กัน margin เดิม */
+    border: 1px solid #cfcfcf;
+    border-radius: 8px;
+    font-size: 14px; line-height: 1.2;
+    box-sizing: border-box;
+  }
+  /* ปุ่มให้สูงพอดีกับช่อง */
+  .add-form.form-row .btn{
+    height: 30px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+
+  
+    
   </style>
 </head>
 <body>
   <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-  <div>Manager: <b>{{ manager_name }}</b></div>
-  <form method="POST" action="{% url 'manager_logout' %}">
-    {% csrf_token %}
-    <button class="btn">Log out</button>
-  </form>
-</header>
+    <div>Manager: <b>{{ manager_name }}</b></div>
+    <form method="POST" action="{% url 'manager_logout' %}">
+      {% csrf_token %}
+      <button class="btn">Log out</button>
+    </form>
+  </header>
+
   <h1>Manager Dashboard</h1>
   <p>List, add, edit, and delete anything from <b>Account</b>, <b>Classroom</b>, and <b>Reservation</b>.</p>
 
@@ -39,11 +122,17 @@
     <section>
       <h2>Accounts</h2>
 
-      <!-- Add new -->
-      <form class="add-form" method="POST" action="{% url 'account_create' %}">
+      <!-- Add new (หัวข้ออยู่ข้างบน + บรรทัดเดียว) -->
+      <form class="add-form form-row" method="POST" action="{% url 'account_create' %}">
         {% csrf_token %}
-        {{ account_form.userName }} 
-        {{ account_form.password }}
+        <div class="f">
+          <label for="{{ account_form.userName.id_for_label }}">Username</label>
+          {{ account_form.userName }}
+        </div>
+        <div class="f">
+          <label for="{{ account_form.password.id_for_label }}">Password</label>
+          {{ account_form.password }}
+        </div>
         <button class="btn btn-primary">Add Account</button>
       </form>
 
@@ -61,7 +150,7 @@
             <td>{{ a.password }}</td>
             <td>
               <div class="row-actions">
-                <a class="btn" href="{% url 'account_edit' a.id %}" name "">Edit</a>
+                <a class="btn" href="{% url 'account_edit' a.id %}">Edit</a>
                 <form class="inline" method="POST" action="{% url 'account_delete' a.id %}">
                   {% csrf_token %}
                   <button class="btn btn-danger" onclick="return confirm('Delete this account?')">Delete</button>
@@ -76,68 +165,122 @@
       </table>
     </section>
 
-    <!-- CLASSROOMS -->
-    <section>
-      <h2>Classrooms</h2>
+<!-- CLASSROOMS -->
+<section>
+  <h2>Classrooms</h2>
 
-      <!-- Add new -->
-      <form class="add-form" method="POST" action="{% url 'classroom_create' %}">
-        {% csrf_token %}
-        {{ classroom_form.roomnumber }}
-        {{ classroom_form.roomsize }}
-        {{ classroom_form.roomcapacity }}
-        {{ classroom_form.start_time }}
-        {{ classroom_form.stop_time }}
-        {{ classroom_form.status }}
-        <button class="btn btn-primary">Add Classroom</button>
-      </form>
+  <!-- Add new (หัวข้ออยู่ข้างบน + บรรทัดเดียว เลื่อนข้างได้ถ้าแคบ) -->
+  <form class="add-form form-row" method="POST" action="{% url 'classroom_create' %}">
+    {% csrf_token %}
+    <div class="f">
+      <label for="{{ classroom_form.roomnumber.id_for_label }}">Room</label>
+      {{ classroom_form.roomnumber }}
+    </div>
+    <div class="f">
+      <label for="{{ classroom_form.roomsize.id_for_label }}">Size</label>
+      {{ classroom_form.roomsize }}
+    </div>
+    <div class="f">
+      <label for="{{ classroom_form.roomcapacity.id_for_label }}">Cap</label>
+      {{ classroom_form.roomcapacity }}
+    </div>
+    <div class="f">
+      <label for="{{ classroom_form.start_time.id_for_label }}">Start</label>
+      {{ classroom_form.start_time }}
+    </div>
+    <div class="f">
+      <label for="{{ classroom_form.stop_time.id_for_label }}">Stop</label>
+      {{ classroom_form.stop_time }}
+    </div>
+    <div class="f">
+      <label for="{{ classroom_form.status.id_for_label }}">Status</label>
+      {{ classroom_form.status }}
+    </div>
+    <button class="btn btn-primary">Add Classroom</button>
+  </form>
 
-      <table>
-        <thead>
-          <tr>
-            <th>#</th><th>Room</th><th>Size</th><th>Cap</th><th>Start</th><th>Stop</th><th>Status</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for r in classrooms %}
-          <tr>
-            <td>{{ r.id }}</td>
-            <td>{{ r.roomnumber }}</td>
-            <td>{{ r.roomsize }}</td>
-            <td>{{ r.roomcapacity }}</td>
-            <td>{{ r.start_time }}</td>
-            <td>{{ r.stop_time }}</td>
-            <td>{{ r.status }}</td>
-            <td>
-              <div class="row-actions">
-                <a class="btn" href="{% url 'classroom_edit' r.id %}">Edit</a>
-                <form class="inline" method="POST" action="{% url 'classroom_delete' r.id %}">
-                  {% csrf_token %}
-                  <button class="btn btn-danger" onclick="return confirm('Delete this classroom?')">Delete</button>
-                </form>
-              </div>
-            </td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="8">No classrooms.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </section>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th><th>Room</th><th>Size</th><th>Cap</th>
+        <th>Start</th><th>Stop</th><th>Status</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in classrooms %}
+      <tr>
+        <td>{{ r.id }}</td>
+        <td>{{ r.roomnumber }}</td>
+        <td>{{ r.roomsize }}</td>
+        <td>{{ r.roomcapacity }}</td>
+        <td>{{ r.start_time }}</td>
+        <td>{{ r.stop_time }}</td>
+
+        <!-- Badge สถานะ -->
+        <td>
+          {% if r.status|stringformat:"s" == "1" %}
+            <span style="display:inline-block;padding:.2rem .6rem;border-radius:999px;background:#dcf6d9;color:#185b28;font-weight:700;font-size:.75rem;border:1px solid #bfe8b8">
+              Open
+            </span>
+          {% else %}
+            <span style="display:inline-block;padding:.2rem .6rem;border-radius:999px;background:#ffe1e7;color:#8b1e2a;font-weight:700;font-size:.75rem;border:1px solid #ffc6cf">
+              Closed
+            </span>
+          {% endif %}
+        </td>
+
+        <!-- ปุ่ม Toggle + ปุ่มเดิม -->
+        <td>
+          <div class="row-actions">
+            <form class="inline" method="POST" action="{% url 'classroom_toggle' r.id %}">
+              {% csrf_token %}
+              <button class="btn" style="border-color:#2d6cdf;color:#2d6cdf">
+                {% if r.status|stringformat:"s" == "1" %}Close{% else %}Open{% endif %}
+              </button>
+            </form>
+
+            <a class="btn" href="{% url 'classroom_edit' r.id %}">Edit</a>
+            <form class="inline" method="POST" action="{% url 'classroom_delete' r.id %}">
+              {% csrf_token %}
+              <button class="btn btn-danger" onclick="return confirm('Delete this classroom?')">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8">No classrooms.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
 
     <!-- RESERVATIONS -->
     <section>
       <h2>Reservations</h2>
 
-      <!-- Add new -->
-      <form class="add-form" method="POST" action="{% url 'reservation_create' %}">
+      <!-- Add new (หัวข้ออยู่ข้างบน + บรรทัดเดียว) -->
+      <form class="add-form form-row" method="POST" action="{% url 'reservation_create' %}">
         {% csrf_token %}
-        <!-- Works if user is TextField (text input) OR ForeignKey (select) -->
-        {{ reservation_form.user }}
-        {{ reservation_form.roomnumber }}
-        {{ reservation_form.roomsize }}
-        {{ reservation_form.time }}
-        {{ reservation_form.date }}
+        <div class="f">
+          <label for="{{ reservation_form.user.id_for_label }}">User</label>
+          {{ reservation_form.user }}
+        </div>
+        <div class="f">
+          <label for="{{ reservation_form.roomnumber.id_for_label }}">Room</label>
+          {{ reservation_form.roomnumber }}
+        </div>
+        <div class="f">
+          <label for="{{ reservation_form.roomsize.id_for_label }}">Size</label>
+          {{ reservation_form.roomsize }}
+        </div>
+        <div class="f">
+          <label for="{{ reservation_form.date.id_for_label }}">Date</label>
+          {{ reservation_form.date }}
+        </div>
+        <div class="f">
+          <label for="{{ reservation_form.time.id_for_label }}">Time</label>
+          {{ reservation_form.time }}
+        </div>
         <button class="btn btn-primary">Add Reservation</button>
       </form>
 
@@ -151,10 +294,7 @@
           {% for z in reservations %}
           <tr>
             <td>{{ z.id }}</td>
-            <td>
-              {# If ForeignKey, z.user will render like "Account object"; if TextField, it's the text. #}
-              {{ z.user }}
-            </td>
+            <td>{{ z.user }}</td>
             <td>{{ z.roomnumber }}</td>
             <td>{{ z.roomsize }}</td>
             <td>{{ z.date }}</td>
@@ -162,7 +302,6 @@
             <td>
               <div class="row-actions">
                 <a class="btn" href="{% url 'reservation_edit' z.id %}">Edit</a>
-                <!-- Cancel button = delete -->
                 <form class="inline" method="POST" action="{% url 'reservation_delete' z.id %}">
                   {% csrf_token %}
                   <button class="btn btn-danger" title="Cancel this reservation" onclick="return confirm('Cancel (delete) this reservation?')">
