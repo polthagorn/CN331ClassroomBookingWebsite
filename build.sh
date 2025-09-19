@@ -1,20 +1,30 @@
 #!/usr/bin/env bash
-# Exit on error
 set -o errexit
 
-pip install --upgrade pip
+# Install dependencies from repo root
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 
-python manage.py collectstatic --no-input
-python manage.py migrate
+# Go to the folder that contains manage.py
+cd roombooking
 
-# Optional: create superuser automatically (only if env vars set)
-python manage.py createsuperuser \
-  --username admin \
-  --email "your@email.com" \
-  --noinput || true
+# Static files + DB migrations
+python manage.py collectstatic --noinput
+python manage.py migrate --noinput
 
-DJANGO_SUPERUSER_USERNAME=admin \
-DJANGO_SUPERUSER_EMAIL=your@email.com \
-DJANGO_SUPERUSER_PASSWORD=admin1234 \
-python manage.py createsuperuser --noinput || true
+# Optional: create superuser via env vars (DJANGO_SUPERUSER_*)
+if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; then
+python manage.py shell << 'PY'
+import os
+from django.contrib.auth import get_user_model
+User = get_user_model()
+u = os.environ["DJANGO_SUPERUSER_USERNAME"]
+e = os.environ.get("DJANGO_SUPERUSER_EMAIL","")
+p = os.environ["DJANGO_SUPERUSER_PASSWORD"]
+if not User.objects.filter(username=u).exists():
+    User.objects.create_superuser(u, e, p)
+    print("Superuser created:", u)
+else:
+    print("Superuser already exists:", u)
+PY
+fi
