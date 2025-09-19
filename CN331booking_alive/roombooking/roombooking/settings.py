@@ -66,12 +66,16 @@ WSGI_APPLICATION = "roombooking.wsgi.application"
 # --- Database ---
 # Uses Postgres if DATABASE_URL is set; otherwise falls back to SQLite.
 DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-        ssl_require=os.environ.get("PGSSL", "False").lower() == "true",
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'poldata',
+        'USER': 'polthagorn',
+        'PASSWORD': 'tIKMBsZheA0UviRzQQNX9tZQF5WLaeto',
+        'HOST': 'dpg-d36skobe5dus738qpgh0-a',
+        'PORT': '5432',
+    }
 }
+
 
 # --- Password validators (unchanged) ---
 AUTH_PASSWORD_VALIDATORS = [
