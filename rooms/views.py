@@ -22,19 +22,19 @@ def rooms(request):
         ctx["smallclassroom"] = list(
             Classroom.objects.filter(roomsize="s")
             .exclude(roomnumber__in=reserved_rooms)
-            .exclude(status=0)
+            .exclude(status=1)
             .values_list("roomnumber", flat=True)
         )
         ctx["mediumclassroom"] = list(
             Classroom.objects.filter(roomsize="m")
             .exclude(roomnumber__in=reserved_rooms)
-            .exclude(status=0)
+            .exclude(status=1)
             .values_list("roomnumber", flat=True)
         )
         ctx["largeclassroom"] = list(
             Classroom.objects.filter(roomsize="l")
             .exclude(roomnumber__in=reserved_rooms)
-            .exclude(status=0)
+            .exclude(status=1)
             .values_list("roomnumber", flat=True)
         )
 
