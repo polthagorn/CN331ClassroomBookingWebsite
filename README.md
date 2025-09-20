@@ -3,7 +3,7 @@
 ## CN331
 
 ## Members
-- Polthagorn Ornthong — 661068  
+- Polthagorn Onthong — 6610685262
 - Pongsathorn Thongkliang — 6610685254  
 
 ---
