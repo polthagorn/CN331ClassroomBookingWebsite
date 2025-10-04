@@ -1,6 +1,7 @@
 # manager/views.py
 from functools import wraps
 
+from django.views.decorators.http import require_POST
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -112,7 +113,7 @@ def account_create(request):
 @require_manager
 @require_http_methods(["GET", "POST"])
 def account_edit(request, pk):
-    acc = Account
+    acc = get_object_or_404(Account, pk=pk)
     if request.method == "POST":
         form = AccountForm(request.POST, instance=acc)
         if form.is_valid():
@@ -120,17 +121,12 @@ def account_edit(request, pk):
             return redirect("manager_dashboard")
     else:
         form = AccountForm(instance=acc)
+    # ใช้หน้าแก้ไขรวม (มีฟอร์ม+ปุ่ม Save/Back)
+    return render(request, "manager/edit_generic.html", {
+        "title": "Edit Account",
+        "form": form,
+    })
 
-    ctx = {
-        "manager_name": request.session.get("manager_name"),
-        "accounts": Account.objects.all().order_by("id"),
-        "classrooms": Classroom.objects.all().order_by("roomnumber"),
-        "reservations": Reservation.objects.all().order_by("-id"),
-        "account_form": form,
-        "classroom_form": ClassroomForm(),
-        "reservation_form": ReservationForm(),
-    }
-    return render(request, "manager/dashboard.html", ctx)
 
 
 @require_manager
@@ -168,7 +164,6 @@ def classroom_create(request):
 @require_http_methods(["GET", "POST"])
 def classroom_edit(request, pk):
     room = get_object_or_404(Classroom, pk=pk)
-
     if request.method == "POST":
         form = ClassroomForm(request.POST, instance=room)
         if form.is_valid():
@@ -176,8 +171,10 @@ def classroom_edit(request, pk):
             return redirect("manager_dashboard")
     else:
         form = ClassroomForm(instance=room)
-
-    return render(request, "manager/classroom_edit.html", {"form": form, "room": room})
+    return render(request, "manager/edit_generic.html", {
+        "title": "Edit Classroom",
+        "form": form,
+    })
 
 
 @require_manager
@@ -215,7 +212,6 @@ def reservation_create(request):
 @require_http_methods(["GET", "POST"])
 def reservation_edit(request, pk):
     res = get_object_or_404(Reservation, pk=pk)
-
     if request.method == "POST":
         form = ReservationForm(request.POST, instance=res)
         if form.is_valid():
@@ -223,8 +219,10 @@ def reservation_edit(request, pk):
             return redirect("manager_dashboard")
     else:
         form = ReservationForm(instance=res)
-
-    return render(request, "manager/reservation_edit.html", {"form": form, "res": res})
+    return render(request, "manager/edit_generic.html", {
+        "title": "Edit Reservation",
+        "form": form,
+    })
 
 
 @require_manager
@@ -242,3 +240,12 @@ def reservation_delete(request, pk):
 @require_http_methods(["GET"])
 def forbid_delete_get(request):
     return HttpResponseForbidden("Delete must be POST.")
+
+
+@require_POST
+def classroom_toggle(request, pk):
+    room = get_object_or_404(Classroom, pk=pk)
+    s = f"{room.status}"            # รองรับทั้ง '1'/'0' หรือค่าที่ cast เป็นสตริง
+    room.status = "0" if s == "1" else "1"
+    room.save(update_fields=["status"])
+    return redirect(request.META.get("HTTP_REFERER", "manager_dashboard"))
