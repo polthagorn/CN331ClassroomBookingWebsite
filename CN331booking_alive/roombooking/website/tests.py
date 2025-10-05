@@ -214,4 +214,5 @@ class ProfileAccountNotFoundTest(TestCase):  # check  handling account error.
         self.assertEqual(
             resp.context["changing_username_message"],
             "Account not found."
+            
         )
