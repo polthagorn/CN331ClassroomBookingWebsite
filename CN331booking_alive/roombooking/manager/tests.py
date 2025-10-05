@@ -1,4 +1,4 @@
-# manager/tests.py
+
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -217,4 +217,97 @@ class ManagerExtraCoverageTests(TestCase):
         # reservation_create valid → redirect
         with patch("manager.views.ReservationForm", DummyOKForm):
             resp = self.client.post(get_url("manager_reservation_create", "reservation_create"), {"any": "x"})
+            self.assertEqual(resp.status_code, 302)
+class ManagerViewsMoreCoverageTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.mgr = ManagerAccount.objects.create(userName="more", password="1234")
+        login_as(self.client, self.mgr)
+
+    # ----- create (invalid branches -> render dashboard 200) -----
+    def test_classroom_create_invalid_renders_dashboard(self):
+        url = get_url("manager_classroom_create", "classroom_create")
+        resp = self.client.post(url, {})  # บังคับ invalid
+        self.assertEqual(resp.status_code, 200)  # invalid → render dashboard
+        self.assertIn("text/html", resp["Content-Type"])
+
+    def test_reservation_create_invalid_renders_dashboard(self):
+        url = get_url("manager_reservation_create", "reservation_create")
+        resp = self.client.post(url, {})  # บังคับ invalid
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("text/html", resp["Content-Type"])
+
+    # ----- edit (GET render form, POST valid -> redirect) -----
+    def test_classroom_edit_get_and_post_valid_redirect(self):
+        # patch: ไม่ต้องพึ่งฟิลด์จริง ใช้ฟอร์มปลอม + render ปลอม
+        dummy_obj = SimpleNamespace(id=1)
+
+        class DummyOKForm:
+            def __init__(self, *a, **kw): pass
+            def is_valid(self): return True
+            def save(self): pass
+
+        with patch("manager.views.get_object_or_404", return_value=dummy_obj), \
+             patch("manager.views.ClassroomForm", DummyOKForm), \
+             patch("manager.views.render", return_value=HttpResponse("ok")):
+            try:
+                url = reverse("manager_classroom_edit", kwargs={"pk": 1})
+            except NoReverseMatch:
+                url = reverse("classroom_edit", kwargs={"pk": 1})
+            # GET
+            r_get = self.client.get(url)
+            self.assertEqual(r_get.status_code, 200)
+            # POST valid -> redirect
+            r_post = self.client.post(url, {"anything": "x"})
+            self.assertEqual(r_post.status_code, 302)
+
+    def test_reservation_edit_get_and_post_valid_redirect(self):
+        dummy_obj = SimpleNamespace(id=1)
+
+        class DummyOKForm:
+            def __init__(self, *a, **kw): pass
+            def is_valid(self): return True
+            def save(self): pass
+
+        with patch("manager.views.get_object_or_404", return_value=dummy_obj), \
+             patch("manager.views.ReservationForm", DummyOKForm), \
+             patch("manager.views.render", return_value=HttpResponse("ok")):
+            try:
+                url = reverse("manager_reservation_edit", kwargs={"pk": 1})
+            except NoReverseMatch:
+                url = reverse("reservation_edit", kwargs={"pk": 1})
+            r_get = self.client.get(url)
+            self.assertEqual(r_get.status_code, 200)
+            r_post = self.client.post(url, {"anything": "x"})
+            self.assertEqual(r_post.status_code, 302)
+
+    # ----- delete (POST -> redirect) ด้วยการ patch ให้ไม่ต้องสร้างโมเดลจริง -----
+    def test_account_delete_redirect(self):
+        dummy_acc = SimpleNamespace(delete=lambda: None)
+        with patch("manager.views.get_object_or_404", return_value=dummy_acc):
+            try:
+                url = reverse("manager_account_delete", kwargs={"pk": 1})
+            except NoReverseMatch:
+                url = reverse("account_delete", kwargs={"pk": 1})
+            resp = self.client.post(url)
+            self.assertEqual(resp.status_code, 302)
+
+    def test_classroom_delete_redirect(self):
+        dummy_room = SimpleNamespace(delete=lambda: None)
+        with patch("manager.views.get_object_or_404", return_value=dummy_room):
+            try:
+                url = reverse("manager_classroom_delete", kwargs={"pk": 1})
+            except NoReverseMatch:
+                url = reverse("classroom_delete", kwargs={"pk": 1})
+            resp = self.client.post(url)
+            self.assertEqual(resp.status_code, 302)
+
+    def test_reservation_delete_redirect(self):
+        dummy_res = SimpleNamespace(delete=lambda: None)
+        with patch("manager.views.get_object_or_404", return_value=dummy_res):
+            try:
+                url = reverse("manager_reservation_delete", kwargs={"pk": 1})
+            except NoReverseMatch:
+                url = reverse("reservation_delete", kwargs={"pk": 1})
+            resp = self.client.post(url)
             self.assertEqual(resp.status_code, 302)
