@@ -2,14 +2,12 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from .models import Classroom, Reservation
 
-# If your URL names differ, change these constants.
 ROOMS_URL_NAME = "rooms"
 LOGIN_URL_NAME = "login"
 MY_RESERVATIONS_URL_NAME = "my_reservations"
 
 
 def set_session_user(client: Client, user_id: str):
-    """Helper to simulate 'logged in' via session['user_id'] like your views do."""
     session = client.session
     session["user_id"] = user_id
     session.save()
@@ -143,3 +141,80 @@ class MyReservationsViewTests(TestCase):
         resp = self.client.post(reverse(MY_RESERVATIONS_URL_NAME), {"rid": str(self.r2.id)})
         self.assertEqual(resp.status_code, 302)
         self.assertFalse(Reservation.objects.filter(id=self.r2.id).exists())
+
+class RoomsEdgeCaseTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # Large room used for time search tests
+        Classroom.objects.create(
+            roomnumber="L301", roomsize="l", start_time="10", stop_time="12", status="1"
+        )
+
+    def test_large_time_search_sets_l_times_and_renders(self):
+        """
+        With start=10, stop=12 and an existing reservation at 11 on that date,
+        remaining times should be ['10','12'] and appear under ctx['l_times'].
+        """
+        set_session_user(self.client, "alice")
+        Reservation.objects.create(
+            user="bob", roomnumber="L301", roomsize="l", time="11", date="2025-10-08"
+        )
+
+        resp = self.client.post(
+            reverse(ROOMS_URL_NAME),
+            {
+                "button_type": "large_time_search",
+                "date": "2025-10-08",
+                "classroom": "L301",
+            },
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("l_times", resp.context)
+        self.assertCountEqual(resp.context["l_times"], ["10", "12"])
+
+    def test_submit_missing_fields_rerenders_and_does_not_create(self):
+        """
+        When any of (user_id, date, classroom, time) is missing, view should re-render
+        rooms.html (200) and not create a Reservation.
+        We'll omit 'time' to simulate the user not picking a slot.
+        """
+        set_session_user(self.client, "alice")
+        before = Reservation.objects.count()
+
+        resp = self.client.post(
+            reverse(ROOMS_URL_NAME),
+            {
+                "submit_type": "large_submit",
+                "date": "2025-10-09",
+                "classroom": "L301",
+                # "time": missing on purpose
+            },
+        )
+        self.assertEqual(resp.status_code, 200)  # re-render, not redirect
+        self.assertEqual(Reservation.objects.count(), before)
+
+    def test_large_submit_success_creates_roomsize_l(self):
+        """
+        Full, valid submission for a large room should redirect and create
+        Reservation with roomsize='l'.
+        """
+        set_session_user(self.client, "alice")
+        resp = self.client.post(
+            reverse(ROOMS_URL_NAME),
+            {
+                "submit_type": "large_submit",
+                "date": "2025-10-10",
+                "classroom": "L301",
+                "time": "10",
+            },
+        )
+        self.assertEqual(resp.status_code, 302)  # redirect back to rooms
+        self.assertTrue(
+            Reservation.objects.filter(
+                user="alice",
+                roomnumber="L301",
+                roomsize="l",
+                date="2025-10-10",
+                time="10",
+            ).exists()
+        )
