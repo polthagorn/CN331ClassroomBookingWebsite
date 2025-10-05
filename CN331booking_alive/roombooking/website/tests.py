@@ -171,5 +171,47 @@ class ProfileLogoutTest(TestCase):  # Check if user logged out correctly.
         self.assertEqual(resp["Location"], reverse("rooms"))
         self.assertIsNone(self.client.session.get("user_id"))
 
-if __name__ == "__main__":
-    unittest.main()
+class ProfileChangePasswordSuccessTest(TestCase): # Check if user password changing work correctly.
+    def setUp(self):
+        self.client = Client()
+        # make a logged-in user
+        self.acc = Account.objects.create(userName="cp_user", password="oldpassword")
+        s = self.client.session
+        s["user_id"] = self.acc.id
+        s.save()
+
+    def test_change_password_success(self):
+        resp = self.client.post(reverse("profile"), {
+            "oldpassword": "oldpassword",
+            "newpassword": "newpassword123",
+        })
+        # redirects via PRG
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp["Location"], reverse("profile"))
+
+        # password updated in DB
+        self.acc.refresh_from_db()
+        self.assertEqual(self.acc.password, "newpassword123")
+
+        # success flash appears on next GET
+        resp2 = self.client.get(reverse("profile"))
+        self.assertEqual(resp2.context["changing_username_message"], "Password changed.")
+
+class ProfileAccountNotFoundTest(TestCase):  # check  handling account error.
+    def setUp(self):
+        self.client = Client()
+        # put a non-existent user_id into session
+        s = self.client.session
+        s["user_id"] = 99999  # id that doesn't exist
+        s.save()
+
+    def test_profile_account_not_found_sets_message(self):
+        resp = self.client.get(reverse("profile"))
+        self.assertEqual(resp.status_code, 200)
+        # context should have no username
+        self.assertIsNone(resp.context["username"])
+        # and should show the not found message
+        self.assertEqual(
+            resp.context["changing_username_message"],
+            "Account not found."
+        )
