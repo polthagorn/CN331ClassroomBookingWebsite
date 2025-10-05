@@ -214,5 +214,229 @@ class ProfileAccountNotFoundTest(TestCase):  # check  handling account error.
         self.assertEqual(
             resp.context["changing_username_message"],
             "Account not found."
-            
+
+        )
+
+class ProfileChangePasswordMissingFieldsTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # create a valid user and log them in
+        self.acc = Account.objects.create(userName="missingpwuser", password="oldpassword")
+        s = self.client.session
+        s["user_id"] = self.acc.id
+        s.save()
+
+    def test_change_password_missing_fields(self):
+        # send blank old/new passwords
+        resp = self.client.post(reverse("profile"), {
+            "oldpassword": "",
+            "newpassword": ""
+        })
+        # should redirect back to profile
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp["Location"], reverse("profile"))
+
+        # next GET shows correct error message
+        resp2 = self.client.get(reverse("profile"))
+        self.assertEqual(
+            resp2.context["changing_username_message"],
+            "Please fill in both fields."
+        )
+
+class ProfileChangePasswordSameAsOldTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # create user and log in
+        self.acc = Account.objects.create(userName="samepwuser", password="oldpassword123")
+        s = self.client.session
+        s["user_id"] = self.acc.id
+        s.save()
+
+    def test_change_password_same_as_old_rejected(self):
+        # try to change to same password
+        resp = self.client.post(reverse("profile"), {
+            "oldpassword": "oldpassword123",
+            "newpassword": "oldpassword123"
+        })
+        # should redirect back to profile
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp["Location"], reverse("profile"))
+
+        # next GET should show the correct message
+        resp2 = self.client.get(reverse("profile"))
+        self.assertEqual(
+            resp2.context["changing_username_message"],
+            "New password must be different from current password."
+        )
+
+class ProfileChangePasswordTooShortTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # create user and log them in
+        self.acc = Account.objects.create(userName="shortpwuser", password="oldpassword123")
+        s = self.client.session
+        s["user_id"] = self.acc.id
+        s.save()
+
+    def test_change_password_too_short_rejected(self):
+        # try to change to a password shorter than 8 chars
+        resp = self.client.post(reverse("profile"), {
+            "oldpassword": "oldpassword123",
+            "newpassword": "short"
+        })
+        # should redirect back to profile
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp["Location"], reverse("profile"))
+
+        # next GET should show the correct error message
+        resp2 = self.client.get(reverse("profile"))
+        self.assertEqual(
+            resp2.context["changing_username_message"],
+            "New password must be at least 8 characters."
+        )
+
+class ProfileChangePasswordWrongCurrentTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # create a user with a known password
+        self.acc = Account.objects.create(userName="wrongpwuser", password="correctpw123")
+        s = self.client.session
+        s["user_id"] = self.acc.id
+        s.save()
+
+    def test_change_password_incorrect_current(self):
+        # provide a wrong current password
+        resp = self.client.post(reverse("profile"), {
+            "oldpassword": "WRONGPW",
+            "newpassword": "newpassword123"
+        })
+        # should redirect back to profile
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp["Location"], reverse("profile"))
+
+        # next GET should show the correct error message
+        resp2 = self.client.get(reverse("profile"))
+        self.assertEqual(
+            resp2.context["changing_username_message"],
+            "Current password is incorrect."
+        )
+
+class IndexViewTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_index_without_session_targets_login(self):
+        resp = self.client.get(reverse("index"))
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context["target"], "login")
+
+    def test_index_with_session_targets_rooms(self):
+        # fake a logged-in session
+        s = self.client.session
+        s["user_id"] = 1
+        s.save()
+
+        resp = self.client.get(reverse("index"))
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context["target"], "rooms")
+
+class LoginEmptyFieldsTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_login_with_missing_username_and_password(self):
+        # Post empty username and password
+        resp = self.client.post(reverse("login"), {
+            "submit_type": "login",
+            "login_username": "",
+            "login_password": "",
+        })
+        # Should redirect back to login
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp["Location"], reverse("login"))
+
+        # On next GET, the error message should appear in context
+        resp2 = self.client.get(reverse("login"))
+        self.assertEqual(
+            resp2.context["user_name_error"],
+            "Please enter username and password."
+        )
+
+class SignupEmptyFieldsTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_signup_with_missing_username_or_password(self):
+        # Try with missing username
+        resp = self.client.post(reverse("login"), {
+            "submit_type": "signup",
+            "signup_username": "",
+            "signup_password": "password123",
+        })
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp["Location"], reverse("login"))
+
+        resp2 = self.client.get(reverse("login"))
+        self.assertEqual(
+            resp2.context["user_name_error"],
+            "Please enter username and password."
+        )
+
+        # Try with missing password
+        resp = self.client.post(reverse("login"), {
+            "submit_type": "signup",
+            "signup_username": "newuser",
+            "signup_password": "",
+        })
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp["Location"], reverse("login"))
+
+        resp2 = self.client.get(reverse("login"))
+        self.assertEqual(
+            resp2.context["user_name_error"],
+            "Please enter username and password."
+        )
+
+class SignupPasswordWithSpacesTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_signup_password_with_space_rejected(self):
+        resp = self.client.post(reverse("login"), {
+            "submit_type": "signup",
+            "signup_username": "spaceuser",
+            "signup_password": "bad pass",  # contains space
+        })
+        # should redirect back to login
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp["Location"], reverse("login"))
+
+        # check error message
+        resp2 = self.client.get(reverse("login"))
+        self.assertEqual(
+            resp2.context["password_error"],
+            "Password cannot contain spaces."
+        )
+
+class SignupDuplicateUsernameTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # create a user with the username already taken
+        Account.objects.create(userName="takenuser", password="somepassword")
+
+    def test_signup_duplicate_username_rejected(self):
+        resp = self.client.post(reverse("login"), {
+            "submit_type": "signup",
+            "signup_username": "takenuser",  # already exists
+            "signup_password": "anotherpassword123",
+        })
+        # should redirect back to login
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp["Location"], reverse("login"))
+
+        # next GET should show the duplicate username error
+        resp2 = self.client.get(reverse("login"))
+        self.assertEqual(
+            resp2.context["username_occupied"],
+            "This username has already been used."
         )
