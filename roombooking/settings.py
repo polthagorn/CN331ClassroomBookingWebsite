@@ -68,10 +68,10 @@ WSGI_APPLICATION = "roombooking.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'poldata',
-        'USER': 'polthagorn',
-        'PASSWORD': 'tIKMBsZheA0UviRzQQNX9tZQF5WLaeto',
-        'HOST': 'dpg-d36skobe5dus738qpgh0-a',
+        'NAME': 'webdata_2jkk',
+        'USER': 'polthagornandpongsathorn',
+        'PASSWORD': '8tFN1480SUlLMPl4kUfmMxwIU5ja92zY',
+        'HOST': 'dpg-d3ud8r6uk2gs73dpidpg-a',
         'PORT': '5432',
     }
 }
